@@ -1,0 +1,8 @@
+#Include Once "../util/util.bas"
+#Include Once "accountUDT.bas"
+#Include Once "objUDT.bas"
+#Include Once "characterUDT.bas"
+#Include Once "containerUDT.bas"
+#Include Once "userUDT.bas"
+#Include Once "itemUDT.bas"
+#Include Once "inventoryUDT.bas"

@@ -1,0 +1,227 @@
+
+     
+<setAll
+	<0/>
+	<0/>
+	1600
+	<900/>
+	<0/>
+	<0/>
+	<8/>
+	<8/>
+/>
+
+
+<imgload
+	<id_name
+		<
+			testBild
+		/>
+	/>
+
+	<file
+		<gui/bild.bmp/>
+	/> 
+	
+	<width
+		<200/>
+	/>
+	<height
+		<200/>
+	/>
+
+
+/>
+
+<window
+	<
+		<id_name<firstWindow/>/>
+		<text<hallo/>/>
+		<width<200/>/>
+		<height<200/>/>
+		
+	/>
+
+	<
+		<setAll
+			<0/>
+			<0/>
+			<200/>
+			<200/>
+			<0/>
+			<0/>
+			<8/>
+			<8/>
+		/>
+		
+		<choice
+			<height
+				<50/>
+			/>
+			<width
+				<200/>
+			/>
+			<list
+				<var<ilist/>/>
+			/>
+			
+			
+		/>
+		
+		<checkbox
+			<height<10/>/>
+			<width<10/>/>
+			
+		/>
+		
+		<wait
+			<height<10/>/>
+		/>
+		
+		<textfield
+			<height<50/>/>
+			<width<100/>/>
+			<string
+				<var<tmpString/>/>
+			/>
+			
+		/>
+		
+		<msgbox
+			<height<100/>/>
+			<width<100/>/>
+			<list
+				<var<ilist2/>/>
+			/>
+			
+		/>
+	
+	
+		<menu
+			<
+				<background
+					<testBild/>
+				/>
+				<height
+					<50/>
+				/>
+				<width
+					<50/>
+				/>
+			
+				<text
+					<menu/>
+				/>
+				
+				<isClickOnly/>
+			/>
+			<
+			
+				<button
+					<height
+						<200/>
+					/>
+					<width
+						<200/>
+					/>
+			
+					<text
+						<
+							<text
+								<Hier steht ein/>
+								<var<blub/>/>
+							/>
+							
+							<img
+								<testBild/>
+							/>
+
+							
+						/>
+					/>
+					
+					<action
+						<var<beep/>/>
+					/>
+					
+				/>
+				<menu
+					<
+						<background
+							<testBild/>
+						/>
+						<height
+							<50/>
+						/>
+						<width
+							<50/>
+						/>
+					
+						<text
+							<menu2/>
+						/>
+						
+					/>
+					<
+						<button
+							<height
+								<50/>
+							/>
+							<width
+								<50/>
+							/>
+					
+							<text
+								<text<beep/>/>
+							/>
+							
+							<action
+								<var<beep/>/>
+							/>
+							
+						/>
+					/>
+				/>
+				
+			
+			/>
+		/>
+	
+	
+	
+		<text<SPALTE1/>/>
+		<text<SPALTE2/>/>
+		<text<SPALTE3/>/>
+		<text<SPALTE4/>/>
+		<n/>
+		<text<-------/>/>
+		<text<-------/>/>
+		<text<-------/>/>
+		<text<-------/>/>
+		<n/>
+		<text<ZEILE1-1/>/>
+		<text<ZEILE1-2/>/>
+		<d/><text<ZEILE1-2.1/>/>
+		<text<ZEILE1-3/>/>
+		<text<ZEILE1-4/>/>
+		<n/>
+		<text<ZEILE2-1/>/>
+		<text<ZEILE2-2/>/>
+		<text<ZEILE2-3/>/>
+		<text<ZEILE2-4/>/>
+		<n/>
+		<text<ZEILE3-1/>/>
+		<text<ZEILE3-2/>/>
+		<text<ZEILE3-3/>/>
+		<text<ZEILE3-4/>/>
+		<n/>
+		<text<ZEILE4-1/>/>
+		<text<ZEILE4-2/>/>
+		<text<ZEILE4-3/>/>
+		<text<ZEILE4-4/>/>
+		<n/>
+		
+		<setX<50/>/>
+		<setY<50/>/>
+	/>
+/>

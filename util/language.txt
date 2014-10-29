@@ -1,0 +1,96 @@
+<ausdruck/>
+
+<[COMMAND]<[ATTRIBUTE]/><[...]/>/>
+->
+	>[COMMAND]
+	>[ATTRIBUTE]
+	>[...]
+
+[COMMAND]{
+	[Attribute]{
+	
+	
+	}
+}
+	
+<[COMMAND]
+	<[ATTRIBUTE]
+		<test1/>
+		<test2/>
+		<test3/>
+	/>	
+/>
+
+	
+<[COMMAND]>
+	<[ATTRIBUTE]>
+
+	<[ATTRIBUTE]/>	
+<[COMMAND]/>
+
+
+
+
+
+
+
+
+
+
+
+
+"Bild:<img<ID/>/>"
+->
+"Bild:" ; "img<ID/>"
+
+"Bild:" ; "img<ID/>"
+             ->img
+             ->ID
+
+
+"Bild:<<img<ID/>/><test<abc/>/>/>"
+->
+"Bild:" ; "<img<ID/>/><test<abc/>/>"
+             ->img<ID/>
+             	->img
+             	->ID
+             
+             ->test<abc/>
+					->test
+					->abc
+					
+					
+
+<window<fghjfhj/><dfgdfg/><rtjrtj/>/>
+
+
+					
+<Window<attribute/><button<data/>/><textfield<data/>/>/>
+->
+Window<attribute/><button<data/>/><textfield<data/>/>
+	->Window
+	->attribute
+	->button<data/>
+	->textfield<data/>
+	
+	
+	<<<a/>b/>c/>
+	
+	<a/>b
+	
+	
+	c
+	
+	
+	<<hallo/>soijgf/>
+	
+	
+	
+	
+<text<hallo dies ist ein schicker/><l/><var<blub/>/>/>
+text<hallo dies ist ein schicker/><l/><var<blub/>/>
+	->text
+	->hallo dies ist ein schicker
+	->l
+	->hallo
+	
