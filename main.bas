@@ -11,8 +11,6 @@
  Print "start server"
  network.CreateServer(9834,10)
 
-
-
 startNetworkThread()
 do
 loop

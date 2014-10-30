@@ -3,28 +3,34 @@
 #Include Once "store/store.bas"
 #Include Once "data/data.bas"
 #Include Once "gui/gui.bas"
-print "0"
+
 
 network.CreateClient("127.0.0.1",9834)
 
 StartnetworkThread()
 start_authentication("Domso")
 
+dim as byte r
 do
 	cls
- network.log.out
+	network.log.out
+ 
  
  protocolMSGList.out
  
-	dim as byte r = check_authentication
+ if r = 0 then
+	r = check_authentication
 	if r = 1 then
 		print "yeah!"
-		exit do
+		tmp2->Send(1,0,0,"",0,0)
+		sleep
 	end if
 	if r = -1 then
 		print "error"
-		exit do
+		tmp->Send(1,0,0,"",0,0)
+		sleep
 	end if
+end if
 	Sleep 100,1
 loop
 sleep

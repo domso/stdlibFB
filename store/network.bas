@@ -106,12 +106,12 @@ Dim As String tmp = V_Data
 		If tmp="" Then Exit do
 		Dim As Integer SizeOfLen=Asc(tmp,1)
 		Dim As Integer size=Val(Mid(tmp,2,SizeOfLen))
-		'If network.isServer=0 Then
-		'	If V_TSNEID<>1 Then
-		'		tmp=Mid(tmp,2+SizeOflen+size)
-		'		Continue do
-		'	EndIf
-		'EndIf
+		If network.isServer=0 Then
+			If V_TSNEID<>1 Then
+				tmp=Mid(tmp,2+SizeOflen+size)
+				Continue do
+			EndIf
+		EndIf
 		
 		network.input.Add(New networkData(V_TSNEID,Mid(tmp,2+SizeOflen,size)),1)
 		tmp=Mid(tmp,2+SizeOflen+size)

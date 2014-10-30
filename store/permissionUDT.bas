@@ -52,6 +52,7 @@ Type rightsUDT extends utilUDT
 	Public:
 	Declare Function check(permission As permissionUDT Ptr) As UByte
 	Declare Sub setRight(rightID As UByte)
+	Declare function getRight as Ubyte
 	Declare Sub removeRight(rightID As UByte)
 End Type
 
@@ -71,3 +72,6 @@ Sub rightsUDT.removeRight(rightID As UByte)
 	this.rights = this.rights Or not rightID
 End Sub
 
+Function rightsUDT.getRight as Ubyte
+	return rights
+end function

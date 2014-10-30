@@ -13,12 +13,12 @@ Type clientUDT extends utilUDT
 		Declare Constructor(tsneID As integer)
 	
 		Declare Function equals(o As utilUDT Ptr) As Integer
-		Declare Function getRights As rightsUDT
+		Declare Function getRights As rightsUDT ptr
 End Type
 
 Constructor clientUDT(tsneID As integer)
 	this.tsneID=tsneID
-	rights.setRight(NORMAL)
+	rights.setRight(GUEST)
 End Constructor
 
 
@@ -29,6 +29,6 @@ Function clientUDT.equals(o As utilUDT Ptr) As Integer
 	Return 0
 End Function
 
-Function clientUDT.getRights As rightsUDT 
-	Return rights
+Function clientUDT.getRights As rightsUDT ptr
+	Return @rights
 End Function

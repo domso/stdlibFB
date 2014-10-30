@@ -69,7 +69,6 @@ End Function
 Function networkMSG.equals(o As utilUDT Ptr) As Integer
 	if o = 0 then return 0
 	if this.protocol = cast(networkMSG ptr,o)->protocol then
-	
 		if this.msgState = cast(networkMSG ptr,o)->msgState then
 			return 1
 		end if

@@ -117,7 +117,6 @@ Function networkUDT.CreateClient(adresse As String,port As UShort) As Byte
 	
 	log.add(new networkMSG(  "[Connecting]",1),1)
 	BV = TSNE_Create_Client(G_Client,adresse, port, @TSNE_Disconnected, @TSNE_Connected, @TSNE_NewData, 60)
-	print "01"
 
 	If BV <> TSNE_Const_NoError Then
 	    log.add(new networkMSG(TSNE_GetGURUCode(BV),0),1)

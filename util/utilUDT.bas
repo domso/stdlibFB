@@ -203,12 +203,12 @@ utilUDT_ERROR_HANDLER:
 Dim As Integer utilUDT_ERROR_HANDLER_NUMBER
 	utilUDT_ERROR_HANDLER_NUMBER = err
 	If utilUDT_ERROR_HANDLER_NUMBER<>0 Then
-	cls
-	Print "[ERROR] "+ getFBerrorMSG(utilUDT_ERROR_HANDLER_NUMBER)
-	Print "--> Function: "+*Erfn()
-    Print "--> Module  : "+*Ermn()
-	sleep
-	end
-EndIf
+		cls
+		Print "[ERROR] "+ getFBerrorMSG(utilUDT_ERROR_HANDLER_NUMBER)
+		Print "--> Function: "+*Erfn()
+		Print "--> Module  : "+*Ermn()
+		sleep
+		end
+	EndIf
 
 

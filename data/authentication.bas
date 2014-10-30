@@ -61,7 +61,7 @@ End function
 function authstage3_function(ndata As networkData ptr,nclient as clientUDT ptr) As UBYTE
 	check_authstage
 	nclient->authstage = 2
-	nclient->getRights.setRight(NORMAL)
+	nclient->getRights->setRight(NORMAL)
 	'Print ":::>>" + x->V_STRINGDATA
 	Return 1
 End function
@@ -85,6 +85,7 @@ end sub
 
 function check_authentication as byte 'returns: 1->success | -1->error | 0->nothing
 	if authstage3->getSuccess then return 1
+	if authstage1->getError then return -1
 	if authstage3->getError then return -1
 	return 0
 end function

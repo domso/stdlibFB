@@ -31,6 +31,7 @@ Constructor networkData(V_TSNEID as UInteger,V_STATE As UByte,V_STATE_2 As UByte
 End Constructor
 
 Constructor networkData(V_TSNEID as UInteger,V_DATA As String)
+	if len(V_DATA)<17 then return
 	Dim As Integer sizeoflen=Asc(V_DATA,16)
 	this.V_TSNEID=V_TSNEID
 	V_TYPE=Asc(Mid(V_DATA,1,1))

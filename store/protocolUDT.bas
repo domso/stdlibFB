@@ -74,7 +74,6 @@ Function protocolUDT.getSuccess as ubyte
 	Dim as networkMSG ptr tmp2 = cast(networkMSG ptr,protocolMSGList.search(tmp))
 	delete tmp
 	if tmp2 <>0 then
-
 		protocolMSGList.remove(tmp)
 		return 1
 	end if
@@ -83,8 +82,10 @@ end function
 
 Function protocolUDT.getError as ubyte
 	dim as networkMSG ptr tmp = new networkMSG(this.id,0)
+	
 	Dim as networkMSG ptr tmp2 = cast(networkMSG ptr,protocolMSGList.search(tmp))
 	delete tmp
+	
 	if tmp2 <>0 then
 		protocolMSGList.remove(tmp)
 		return 1
@@ -119,7 +120,7 @@ Function useProtocol_internal(item As networkData Ptr,client As clientUDT ptr) A
 	'If tmp2->getPermission = 1 Then Return 1
 	
 	
-	If client->getRights.check(tmp2->getPermission) Then
+	If client->getRights->check(tmp2->getPermission) Then
 		If tmp2->useAction Then
 			If tmp2->action(item,client)=1 Then 
 				If tmp2->noReply Then Return 4
@@ -160,6 +161,8 @@ End function
 
 '
 Dim As protocolUDT Ptr tmp = New protocolUDT("GLOBAL_SET_IRGENDWAS_FOOL",1,@foo)
+Dim As protocolUDT Ptr tmp2 = New protocolUDT("GLOBAL_SET_IRGENDWAS_FOOL2",5,@foo,DEVELOPER)
+
 
 
 
