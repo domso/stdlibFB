@@ -12,9 +12,11 @@ Type networkMSG extends utilUDT
 	Public:
 		Declare Constructor(item As networkData ptr)
 		Declare Constructor(item As String,msgState As UByte)
+		Declare Constructor(protocol as Ubyte,msgState As UByte)
 		Declare Function toString As String
 		Declare Function isError As UByte
 		Declare Function isSuccess As UByte
+		Declare virtual Function equals(o As utilUDT Ptr) As Integer
 End Type
 
 Constructor networkMSG(item As networkData ptr)
@@ -46,6 +48,11 @@ Constructor networkMSG(item As String,msgState As UByte)
 	this.msgState = msgState
 End Constructor
 
+Constructor networkMSG(protocol as Ubyte,msgState As UByte)
+	this.protocol = protocol
+	this.msgState = msgState
+end constructor
+
 Function networkMSG.toString As String
 	Return net_msg
 End Function
@@ -58,3 +65,14 @@ End Function
 Function networkMSG.isSuccess As UByte
 	Return msgState
 End Function
+
+Function networkMSG.equals(o As utilUDT Ptr) As Integer
+	if o = 0 then return 0
+	if this.protocol = cast(networkMSG ptr,o)->protocol then
+	
+		if this.msgState = cast(networkMSG ptr,o)->msgState then
+			return 1
+		end if
+	end if
+	return 0
+end function

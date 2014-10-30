@@ -13,7 +13,7 @@ Type protocolUDT extends utilUDT
 		As permissionUDT Ptr permission
 	Public:
 		As UByte useAction=0,id,onlyServer=0,onlyClient=0,noReply=0
-		As function(As networkData Ptr=0) As Integer action
+		As function(As networkData Ptr=0,as clientUDT ptr=0) As UBYTE action
 		As String titel
 		Declare Constructor(titel As String,id As UByte,action As Any Ptr,Rights As UByte=NORMAL,noList As UByte=0)
 		Declare Destructor
@@ -22,15 +22,25 @@ Type protocolUDT extends utilUDT
 		Declare virtual Function toString As String
 		Declare Function getPermission As permissionUDT Ptr
 		Declare virtual Function Send(V_TSNEID as UInteger,V_STATE As UByte,V_STATE_2 As UByte,V_STRINGDATA as String,V_INTEGERDATA As integer,V_DOUBLEDATA As Double) As UByte 
+		Declare virtual Function getSuccess as Ubyte
+		Declare virtual Function getError as Ubyte
 End Type
 
 Constructor protocolUDT(titel As String,id As UByte,action As Any Ptr,Rights As UByte=NORMAL,noList As UByte=0)
-	If noList=0 Then protocolList.add(@This,1)
 	this.action = action
 	useAction = 1
 	this.titel = titel
 	this.id = id
 	this.permission = New permissionUDT(rights)
+	
+	If noList=0 Then 
+		Dim As protocolUDT Ptr tmp = Cast(protocolUDT Ptr,protocolList.search(@this))
+		if tmp <> 0 then
+			FB_CUSTOMERROR_STRING = "Duplicated protocol id between "+titel+" and "+tmp->titel+"!"
+			FB_CUSTOMERROR(*erfn(),*ermn())
+		end if
+		protocolList.add(@This,1)
+	end if
 End Constructor
 
 Destructor protocolUDT
@@ -59,12 +69,35 @@ Function protocolUDT.Send(V_TSNEID as UInteger,V_STATE As UByte,V_STATE_2 As UBy
 	Return network.Send(New networkData(V_TSNEID,V_STATE,V_STATE_2,this.id,V_STRINGDATA,V_INTEGERDATA,V_DOUBLEDATA),1)
 End Function
 
+Function protocolUDT.getSuccess as ubyte
+	dim as networkMSG ptr tmp = new networkMSG(this.id,1)
+	Dim as networkMSG ptr tmp2 = cast(networkMSG ptr,protocolMSGList.search(tmp))
+	delete tmp
+	if tmp2 <>0 then
+
+		protocolMSGList.remove(tmp)
+		return 1
+	end if
+	return 0
+end function
+
+Function protocolUDT.getError as ubyte
+	dim as networkMSG ptr tmp = new networkMSG(this.id,0)
+	Dim as networkMSG ptr tmp2 = cast(networkMSG ptr,protocolMSGList.search(tmp))
+	delete tmp
+	if tmp2 <>0 then
+		protocolMSGList.remove(tmp)
+		return 1
+	end if
+	return 0
+end function
+
 Function useProtocol_internal(item As networkData Ptr,client As clientUDT ptr) As UByte
 	If item = 0 Then Return 4
 	If client = 0 Then Return 3
 	If item->V_TYPE=0 Then
 		'success error ?
-		'protocolMSGList.add(New networkMSG(item),1)
+		protocolMSGList.add(New networkMSG(item),1)
 		Return 4
 	EndIf
 	
@@ -88,7 +121,7 @@ Function useProtocol_internal(item As networkData Ptr,client As clientUDT ptr) A
 	
 	If client->getRights.check(tmp2->getPermission) Then
 		If tmp2->useAction Then
-			If tmp2->action(item)=1 Then 
+			If tmp2->action(item,client)=1 Then 
 				If tmp2->noReply Then Return 4
 				Return 0
 			EndIf
@@ -119,8 +152,8 @@ Function getProtocolName(id As Integer) As String
 End Function
 
 
-function foo(x As networkData ptr) As integer
-	'Print ":::>>" + x->V_STRINGDATA
+function foo(x As networkData ptr) As UBYTE
+	Print ":::>>" + x->V_STRINGDATA
 	Return 1
 End function
 

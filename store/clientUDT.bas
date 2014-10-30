@@ -6,6 +6,7 @@ Type clientUDT extends utilUDT
 		As rightsUDT rights
 	Public:
 		As integer tsneID
+		as UByte authstage
 		as String username
 		As Double con_time
 		

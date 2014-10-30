@@ -3,41 +3,55 @@
 #Include Once "store/store.bas"
 #Include Once "data/data.bas"
 #Include Once "gui/gui.bas"
+print "0"
 
 network.CreateClient("127.0.0.1",9834)
 
 StartnetworkThread()
+start_authentication("Domso")
 
-Dim As Double zeit
-Do
-	
-	zeit=timer
-For i As Integer = 1 To 100000
- tmp->send(1,0,0,"asd",0,0)
- If i Mod 10000 = 0 Then Print i
- Sleep 1,1
- Next
-	Print Timer-zeit
-
-Sleep 2000,1
+do
+	cls
+ network.log.out
+ 
+ protocolMSGList.out
+ 
+	dim as byte r = check_authentication
+	if r = 1 then
+		print "yeah!"
+		exit do
+	end if
+	if r = -1 then
+		print "error"
+		exit do
+	end if
+	Sleep 100,1
 loop
-end
+sleep
+/'
+
+Do
+	cls
+ network.log.out
+ 
+ protocolMSGList.out
+ Sleep 100,1
+ 'Sleep 1000,1
+Loop
+Dim As Double zeit
 Do
 	cls
  network.log.out
  
  protocolMSGList.out
  Print "---"
- Dim As String text="asd"
- 'Input text
- For i As Integer = 1 To 1000000
+ Dim As String text
+ Input text
  tmp->send(1,0,0,text,0,0)
- If i Mod 10000 = 0 Then Print i
- next
- Sleep 1000,1
+ Sleep 100,1
  'Sleep 1000,1
 Loop
-
+'/
 /'
 #Include "3d/openb3d.bi"
 #Define Render_opengl

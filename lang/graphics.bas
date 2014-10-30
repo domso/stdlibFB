@@ -1,6 +1,6 @@
 #Include Once "../util/util.bas"
 #Include Once "../gui/gui.bas"
-#Include Once "Cursor.bas"
+#Include Once "cursor.bas"
 
 '####functions
 Dim Shared As Any Ptr GLOBAL_GRAPHIC_OUTPUT_BUFFER(1 To 2)

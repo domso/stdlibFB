@@ -21,7 +21,6 @@ Sub networkThread(tmpType As Any Ptr)
 			tmp=Cast(networkData Ptr,network.input.getItem)
 			If tmp<>0 Then
 				client=network.getClient(tmp->V_TSNEID)
-				
 				useProtocol(tmp,client)
 				network.input.remove(tmp)
 			EndIf

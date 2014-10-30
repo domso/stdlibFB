@@ -130,6 +130,8 @@ Function file2String(file As String,delWS As UByte=0) As String
 	Return outputstring	
 End Function
 
+Dim shared as String FB_CUSTOMERROR_STRING
+FB_CUSTOMERROR_STRING = "ndef"
 Function getFBerrorMSG(id As UByte) As String
 	Select Case id
 		Case 0
@@ -168,18 +170,45 @@ Function getFBerrorMSG(id As UByte) As String
 			Return "return without gosub"
 		Case 17
 			Return "end of file"
+		case 18
+			return FB_CUSTOMERROR_STRING
+			
 	End Select
 End Function
+
+Sub FB_CUSTOMERROR(func as String="",modu as String = "")
+	Dim As Integer utilUDT_ERROR_HANDLER_NUMBER
+	utilUDT_ERROR_HANDLER_NUMBER = 18
+	If utilUDT_ERROR_HANDLER_NUMBER<>0 Then
+	cls
+	Print "[ERROR] "+ getFBerrorMSG(utilUDT_ERROR_HANDLER_NUMBER)
+	if func="" then
+		Print "--> Function: "+*Erfn()
+	else
+		Print "--> Function: "+func'*Erfn()
+	end if
+	if modu="" then
+		Print "--> Module  : "+*Ermn()
+	else
+		Print "--> Module  : "+modu
+	end if
+	sleep
+	end
+EndIf
+end sub
 
 On Error GoTo utilUDT_ERROR_HANDLER
 
 utilUDT_ERROR_HANDLER:
-Dim As Integer utilUDT_ERROR_HANDLER_NUMBER = Err
-If utilUDT_ERROR_HANDLER_NUMBER<>0 Then
+Dim As Integer utilUDT_ERROR_HANDLER_NUMBER
+	utilUDT_ERROR_HANDLER_NUMBER = err
+	If utilUDT_ERROR_HANDLER_NUMBER<>0 Then
 	cls
 	Print "[ERROR] "+ getFBerrorMSG(utilUDT_ERROR_HANDLER_NUMBER)
 	Print "--> Function: "+*Erfn()
-   Print "--> Module  : "+*Ermn()
+    Print "--> Module  : "+*Ermn()
 	sleep
 	end
 EndIf
+
+

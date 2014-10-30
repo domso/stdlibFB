@@ -4,7 +4,7 @@
 '#Include Once "3d/3d.bas"
 
  Print "init"
- Dim As containerUDT container
+ 'Dim As containerUDT container
 
 'startdatathread(@container,1)
  
@@ -12,8 +12,10 @@
  network.CreateServer(9834,10)
 
 
+
 startNetworkThread()
-Sleep
+do
+loop
 '	
 'loop
  'Do
