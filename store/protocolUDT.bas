@@ -161,7 +161,7 @@ End function
 
 '
 Dim As protocolUDT Ptr tmp = New protocolUDT("GLOBAL_SET_IRGENDWAS_FOOL",1,@foo)
-Dim As protocolUDT Ptr tmp2 = New protocolUDT("GLOBAL_SET_IRGENDWAS_FOOL2",5,@foo,DEVELOPER)
+'Dim As protocolUDT Ptr tmp2 = New protocolUDT("GLOBAL_SET_IRGENDWAS_FOOL2",5,@foo,DEVELOPER)
 
 
 

@@ -7,3 +7,5 @@
 '#Include Once "itemUDT.bas"
 '#Include Once "inventoryUDT.bas"
 #include once "authentication.bas"
+#include once "characterSelection.bas"
+
