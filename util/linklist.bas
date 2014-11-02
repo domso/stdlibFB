@@ -21,7 +21,7 @@ Type list_type
 	Declare Sub out
 	Declare Sub out_rec(set As list_item_type ptr)
 	
-	Declare sub reset
+	Declare sub Reset(noMutex As UByte=0)
 	Declare Function getItem(backward As byte=0) As utilUDT Ptr
 	
 	
@@ -30,12 +30,16 @@ Type list_type
 	Declare Function lswap(item1 As utilUDT Ptr,item2 As utilUDT Ptr) As byte
 	Declare Sub execute
 	Declare Constructor
+	Declare Destructor
 End Type
 
 Constructor list_type
 	list_mutex = MutexCreate()
 End Constructor
 
+Destructor list_type
+	MutexDestroy list_mutex
+End Destructor
 
 
 Sub list_type.add(data_item As utilUDT Ptr,DisableRemove As Integer=0)
@@ -80,7 +84,7 @@ Sub list_type.clear(DisableHeadDelete As Byte=0)
 	MutexLock list_mutex
 	Dim As list_item_type Ptr tmp
 	If set=0 And start=0 And ende=0 Then MutexUnLock list_mutex:Return
-	this.Reset
+	this.Reset(1)
 	If set->head=0 Then MutexUnLock list_mutex:Return
 	If set=0 Then MutexUnLock list_mutex:Return
 	itemCount=0
@@ -103,7 +107,7 @@ Sub list_type.remove(item As utilUDT Ptr,DisableHeadDelete As Byte=0)
 	MutexLock list_mutex
 	Dim As list_item_type ptr tmp_old
 	If set=0 And start=0 And ende=0 Then MutexUnLock list_mutex: Return
-	this.Reset
+	this.Reset(1)
 	If set->head=0 Then MutexUnLock list_mutex: Return
 	If set=0 Then MutexUnLock list_mutex: Return
 	
@@ -186,9 +190,10 @@ Sub list_type.out_rec(set As list_item_type Ptr)
 	Out_rec(set->tail)	
 End Sub
 
-Sub list_type.reset
-	
-	set=start	
+Sub list_type.reset(noMutex As UByte=0)
+	If noMutex=0 Then mutexLock list_mutex
+	set=start
+	If noMutex=0 Then MutexUnLock list_mutex
 End Sub
 
 Function list_type.getItem(backward As byte=0) As utilUDT Ptr
@@ -213,7 +218,7 @@ Function list_type.search(item As utilUDT Ptr)As utilUDT Ptr
 	MutexLock list_mutex
 	If set=0 And start=0 And ende=0 Then MutexUnLock list_mutex: Return  0
 	Dim As list_item_type Ptr tmp=set
-	this.Reset
+	this.Reset(1)
 	Do
 		If (set->head->equals(item)=1) Then
 			Var tmpReturn = set->head
@@ -229,7 +234,7 @@ End Function
 
 Sub list_type.execute
 	MutexLock list_mutex  
-	this.Reset
+	this.Reset(1)
 	If set=0 or start=0 or ende=0 Then MutexUnLock list_mutex: Return
 	Do
 		If set->head<>0 Then 
@@ -249,7 +254,7 @@ Function list_Type.lswap(item1 As utilUDT Ptr,item2 As utilUDT Ptr) As Byte
 	If item1=item2 Then MutexUnLock list_mutex: Return 0
 	If set=0 And start=0 And ende=0 Then MutexUnLock list_mutex: Return 0
 	Dim As list_item_type Ptr tmp1=0,tmp2=0,tmp3=set 
-	this.Reset
+	this.Reset(1)
 	If set=0 Then MutexUnLock list_mutex: Return 0
 	Do
 		If set->head=item1 Then tmp1=set
