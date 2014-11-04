@@ -69,17 +69,21 @@ tmp = parseCommand(test)
 
 Dim As variableUDT testvar32  = "ilist"
 testvar32.setList
-testvar32.Data = tmp 
+'testvar32.Data = tmp 
+
+
 
 Dim As variableUDT testvar322  = "ilist2"
 testvar322.setList
 Dim As list_type testvar322_list
-testvar322_list.add(New utilUDT(1))
-testvar322_list.add(New utilUDT(2))
-testvar322_list.add(New utilUDT(3))
-testvar322_list.add(New utilUDT(4))
+for i as integer = 1 to 100 
+	testvar322_list.add(New utilUDT(i))
+
+next
+
 testvar322.Data = @testvar322_list 
 
+testvar32.Data = @testvar322_list 
 
 interpreter(tmp)
 tmp->Clear
@@ -111,7 +115,7 @@ Do
 		'WindowTitle Str(GLOBAL_GUI_WINDOW_LIST.itemCount)
 		fpscount+=1
 		fps+=int(1/(Timer-zeit))
-		WindowTitle(Str(int(fps/fpscount)))
+	'	WindowTitle(Str(int(fps/fpscount)))
 	EndIf
 	
 	screenunlock

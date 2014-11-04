@@ -22,6 +22,7 @@ Type list_type
 	Declare Sub out_rec(set As list_item_type ptr)
 	
 	Declare sub Reset(noMutex As UByte=0)
+	Declare sub ResetB(noMutex As UByte=0)
 	Declare Function getItem(backward As byte=0) As utilUDT Ptr
 	
 	
@@ -196,6 +197,12 @@ Sub list_type.reset(noMutex As UByte=0)
 	If noMutex=0 Then MutexUnLock list_mutex
 End Sub
 
+Sub list_type.resetB(noMutex As UByte=0)
+	If noMutex=0 Then mutexLock list_mutex
+	set=ende
+	If noMutex=0 Then MutexUnLock list_mutex
+End Sub
+
 Function list_type.getItem(backward As byte=0) As utilUDT Ptr
 	MutexLock list_mutex
 	If set=0 Then MutexUnLock list_mutex: Return 0
@@ -249,9 +256,11 @@ Sub list_type.execute
 End Sub
 
 Function list_Type.lswap(item1 As utilUDT Ptr,item2 As utilUDT Ptr) As Byte
-	
+	if item1 = 0 then return 0
+	if item2 = 0 then return 0
 	MutexLock list_mutex
 	If item1=item2 Then MutexUnLock list_mutex: Return 0
+	
 	If set=0 And start=0 And ende=0 Then MutexUnLock list_mutex: Return 0
 	Dim As list_item_type Ptr tmp1=0,tmp2=0,tmp3=set 
 	this.Reset(1)

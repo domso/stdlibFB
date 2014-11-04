@@ -6,12 +6,18 @@
 
 Type choiceUDT extends graphicUDT
 	As panelUDT panel
+	as list_type item_record_start
+	as list_type item_record_end
 	Declare Constructor(position As pointUDT Ptr=0,Width_ As Integer=0,height As Integer=0)
+	as integer max_rows=5
+	as integer current_rows=0
+	as integer item_record_position
 	Declare virtual Function todo As Byte
 	Declare virtual Sub Paint
 	Declare virtual Sub resetChildPosition
 	Declare virtual Sub Add(text As String,sb As Any Ptr=0)
-
+	Declare virtual Sub pushUp
+	Declare virtual Sub pushDown
 End Type
 
 Constructor choiceUDT(position As pointUDT Ptr=0,Width_ As Integer=0,height As Integer=0)
@@ -22,7 +28,12 @@ End Constructor
 
 Sub choiceUDT.add(text As String,sb As Any Ptr=0)
 	Var tmp = New buttonUDT(text,New pointUDT(0,0),width_,height,sb)
-	panel.AddGraphic(tmp)
+	if current_rows+1<=max_rows then
+		panel.AddGraphic(tmp)
+		current_rows+=1
+	else
+		item_record_end.add(tmp,1)
+	end if
 	
 End Sub
 
@@ -57,14 +68,22 @@ Sub choiceUDT.resetChildPosition
 					tmpB->resize(width_,height)
 				EndIf
 				i+=1
+				'if i>this.max_rows then exit do
 			EndIf
 	Loop Until tmp=0
 	
 
 End Sub
 
-
+DIm shared as double tmpTime
 Function choiceUDT.todo As Byte
+	if tmpTime=0 then
+		tmptime=timer
+	end if
+	if timer-tmptime>1 then
+		tmptime=0
+		pushUp
+	end if
 	
 	If panel.enable=1 Then
 		If panel.loadOnEventList=0 Then
@@ -111,3 +130,45 @@ Function choiceUDT.todo As Byte
 	End if
 	Return 1
 End Function
+
+Sub choiceUDT.pushDown
+	item_record_start.resetB
+	dim as buttonUDT ptr tmp = cast(buttonUDT ptr,item_record_start.getItem(1))
+	if tmp = 0 then return 'no more elements
+	item_record_start.remove(tmp,1)
+	if max_rows = current_rows then
+		panel.graphicList.resetB
+		dim as buttonUDT ptr tmp2 = cast(buttonUDT ptr,panel.graphicList.getItem(1)) 
+		panel.RemoveGraphic(tmp2,1)
+		current_rows-=1
+		item_record_end.add(tmp2,1)
+	end if
+	panel.addGraphic(tmp)
+	current_rows+=1
+	panel.graphicList.reset
+	panel.graphicList.lswap(tmp,cast(buttonUDT ptr,panel.graphicList.getItem))
+		
+end sub
+
+Sub choiceUDT.pushUp
+	item_record_end.reset
+	dim as buttonUDT ptr tmp = cast(buttonUDT ptr,item_record_end.getItem)
+	if tmp = 0 then return 'no more elements
+
+	item_record_end.remove(tmp,1)
+	
+	
+	if max_rows = current_rows then
+		panel.graphicList.reset
+		dim as buttonUDT ptr tmp2 = cast(buttonUDT ptr,panel.graphicList.getItem()) 
+		panel.RemoveGraphic(tmp2,1)
+		current_rows-=1
+		item_record_start.add(tmp2,1)
+	end if
+	
+	panel.addGraphic(tmp)
+	current_rows+=1
+	panel.graphicList.resetB
+	panel.graphicList.lswap(tmp,cast(buttonUDT ptr,panel.graphicList.getItem(1)))
+	resetChildPosition
+end sub
