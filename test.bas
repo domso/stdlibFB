@@ -41,9 +41,9 @@ testvar21.data = @testString2
 testvar21.setString
 
 Dim As variableUDT testvarString = "tmpString"
-Dim As String testString3 = "abc"
+Dim As String testString3 = "abc2"
 testvarString.data = @testString3
-testvarString.setPTR
+testvarString.setstring
 
 Sub testbeep
 	Beep

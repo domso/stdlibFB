@@ -78,12 +78,14 @@
 			<height<10/>/>
 		/>
 		
-		<textfield
+		<button
 			<height<50/>/>
 			<width<100/>/>
 			<polling<1000/>/>
-			<string
-				<var<tmpString/>/>
+			<text
+				<text
+					<var<tmpString/>/>
+				/>
 			/>
 			
 		/>
