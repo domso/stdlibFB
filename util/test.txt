@@ -81,6 +81,7 @@
 		<textfield
 			<height<50/>/>
 			<width<100/>/>
+			<polling<1000/>/>
 			<string
 				<var<tmpString/>/>
 			/>

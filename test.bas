@@ -103,7 +103,7 @@ Do
 	zeit=timer
 	
 	i+=1
-
+	testString3 = str(time)
 	If i Mod 10=0 Then
 		Cls
 		Line(0,0)-(800,600),RGB(125,125,125),bf

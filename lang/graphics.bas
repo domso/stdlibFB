@@ -12,6 +12,7 @@ Function setBasicGraphicStats(obj As graphicUDT Ptr,list As list_type ptr) as gr
 	Dim As Integer tmp_obj_pos_y = -1
 	Dim As Integer tmp_obj_width
 	Dim As Integer tmp_obj_height
+	Dim As Integer tmp_obj_polling
 	Dim As String tmp_obj_background
 	
 	If obj=0 Then Return 0
@@ -68,7 +69,15 @@ Function setBasicGraphicStats(obj As graphicUDT Ptr,list As list_type ptr) as gr
 					EndIf
 					tmp_obj_background = tmp2->text
 				EndIf
-				
+				If LCase(tmp2->text) = "polling" Then
+					tmp2 = Cast(SubString Ptr,tmp->list->getItem)
+					If tmp2=0 Then
+						logInterpret("no attribute for 'polling'",1)
+						Return 0
+					EndIf
+					If tmp2->IsNumber=0 Then Return 0
+					tmp_obj_polling = Val(tmp2->text)
+				EndIf
 			EndIf
 		End if
 	Loop Until tmp = 0
@@ -88,6 +97,11 @@ Function setBasicGraphicStats(obj As graphicUDT Ptr,list As list_type ptr) as gr
 	'obj->Width_ = tmp_obj_width
 	'obj->height = tmp_obj_height
 	obj->resize(tmp_obj_width,tmp_obj_height)
+	if tmp_obj_polling <> 0 then
+		obj->enablePolling = 1
+		obj->polling = tmp_obj_polling / 1000 
+	end if
+	
 	If tmp_obj_background<>"" Then
 
 		obj->background = getIMG(tmp_obj_background)
