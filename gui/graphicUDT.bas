@@ -34,12 +34,12 @@ Type graphicUDT extends utilUDT
 	As Byte isActionSet=0,enable=1,isResizeable=1,isRezing,isMoveable=1,isMoving,lastMouseWheelState,EnableMouse=1,EnableFullMove=0,AllowMouseOverEffect=1,EnableMouseClick=1,EnableChildObjects=0
 	As pointUDT position
 	As pointUDT positionBuffer '??
-	As double Width_,height 
+	As integer Width_,height 
 	As Integer oldMouseX,oldMouseY
 	As list_type Ptr child
 
 	Declare virtual Function mouseOver As Byte
-	Declare virtual Function mouseWheel As Byte
+	Declare virtual Function mouseWheel(ignorPosition As UByte=0) As Byte
 	Declare virtual Function isPressed(force As Byte=0) As Byte
 	Declare virtual Sub repaint
 	Declare virtual Sub paint
@@ -92,11 +92,11 @@ Function graphicUDT.mouseOver As Byte
 	Return 0
 End Function
 
-Function graphicUDT.mouseWheel As Byte
+Function graphicUDT.mouseWheel(ignorPosition As UByte=0) As Byte
 	Dim As Integer x,y,r
 	If GetMouseState (x,y,r,0,0) = -1 Then Return 0
 	
-	If x>=position.x And x<position.x+Width_ And y>=position.y And y<position.y+height Then 
+	If (x>=position.x And x<position.x+Width_ And y>=position.y And y<position.y+height) Or ignorPosition=1 Then 
 		Dim As Byte tmp=lastMouseWheelstate-r
 		lastMouseWheelState=r
 		Return tmp

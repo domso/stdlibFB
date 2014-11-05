@@ -15,6 +15,9 @@ ScreenRes 800,600,32
 #Include Once "lang/textfield.bas"
 #Include Once "lang/msgbox.bas"
 #Include Once "gui/gui.bas"
+
+
+
 'Dim As String test = "hier wollen wir etwas herausparsen! <code <hallo/>  blub <hier auch noch/> /> und das auch <code2/>noch fett <code3/> schnell"
 'Dim As String test = "sdfsdf <0/> abc123 <1<1.1/><1.1/><1.1<1.1<1.1/>/>/>/>"
 'Dim As String test = "hallo <0/> <<<a/>b/>asdc/> du bob"
@@ -76,7 +79,7 @@ testvar32.setList
 Dim As variableUDT testvar322  = "ilist2"
 testvar322.setList
 Dim As list_type testvar322_list
-for i as integer = 1 to 100 
+for i as integer = 1 to 10 
 	testvar322_list.add(New utilUDT(i))
 
 next

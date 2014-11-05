@@ -3,7 +3,8 @@
 Type buttonUDT extends graphicUDT
 	Declare Constructor(text As String,position As pointUDT Ptr=0,Width_ As Integer=0,height As Integer=0,sb As Any Ptr=0)
 	Declare virtual Function todo As Byte
-	Declare virtual Sub paint
+	Declare virtual Sub Paint
+	Declare virtual Function toString As String
 End Type
 
 Constructor buttonUDT(text As String,position As pointUDT Ptr=0,Width_ As Integer=0,height As Integer=0,sb As Any Ptr=0)
@@ -46,4 +47,8 @@ Function buttonUDT.todo As Byte
 	
 	
 	Return 1
+End Function
+
+Function buttonUDT.toString As String
+	Return text
 End Function

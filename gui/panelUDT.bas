@@ -14,7 +14,7 @@ Type panelUDT  extends utilUDT
 
 	 
 	As Any Ptr buffer
-	Declare Sub AddGraphic(item As graphicUDT ptr)
+	Declare Sub AddGraphic(item As graphicUDT Ptr,useFront As UByte=0)
 	Declare Sub RemoveGraphic(item As graphicUDT ptr,NodeleteHead as Ubyte)
 	Declare virtual Sub update
 	Declare Function mouseOver(UseDimension As Byte=0) As Byte
@@ -26,6 +26,7 @@ Type panelUDT  extends utilUDT
 	Declare virtual Function todo As Byte
 	Declare Constructor (position As pointUDT Ptr=0,Width_ As Integer=0,height As Integer=0)
 	Declare virtual Function equals(o As utilUDT Ptr) As Integer
+	
 End Type
 
 Constructor panelUDT(position As pointUDT Ptr=0,Width_ As Integer=0,height As Integer=0)
@@ -50,10 +51,17 @@ Function panelUDT.todo As Byte
 	Return 0
 End Function
 
-Sub panelUDT.AddGraphic(item As graphicUDT ptr)
+
+
+Sub panelUDT.AddGraphic(item As graphicUDT Ptr,useFront As UByte=0)
 	'item->isResizeable=0
 	'item->isMoveAble=0
-	graphicList.add(item,1)	
+	If useFront Then
+		graphicList.addfront(item,1)
+	Else
+		graphicList.add(item,1)	
+	EndIf
+		
 End Sub
 
 Sub panelUDT.RemoveGraphic(item As graphicUDT ptr,NodeleteHead as Ubyte=0)

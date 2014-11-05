@@ -13,6 +13,8 @@ Type list_type
 	As Any Ptr list_mutex
 	As Integer itemCount
 	Declare Sub Add(item As utilUDT ptr,DisableRemove As Integer=0)
+	Declare Sub AddFront(item As utilUDT ptr,DisableRemove As Integer=0)
+	
 	
 	Declare Sub Clear(DisableHeadDelete As Byte=0)
 	Declare Sub remove(item As utilUDT Ptr,DisableHeadDelete As Byte=0)
@@ -80,6 +82,44 @@ Sub list_type.add(data_item As utilUDT Ptr,DisableRemove As Integer=0)
 End Sub
 
 
+Sub list_type.addFront(data_item As utilUDT Ptr,DisableRemove As Integer=0)
+	
+
+	If data_item=0 Then Return
+	MutexLock list_mutex
+
+	Dim As list_item_type Ptr item
+
+	itemCount+=1
+
+	item=data2list(data_item)
+'MutexUnLock list_mutex
+'	Return
+	If DisableRemove=0 Then
+		MutexUnLock list_mutex
+		remove(data_item)
+		MutexLock list_mutex
+	EndIf
+	'If DisableRemove=2 Then remove(data_item,1)
+
+	
+	If (start=0 And ende=0) Then
+		start=item
+		ende=item
+		MutexUnLock list_mutex
+		return
+	EndIf
+
+	If start<>0 Then
+		item->tail=start
+		start->front=item
+	EndIf
+	If set = start Then set = item
+	start=item
+	
+	MutexUnLock list_mutex
+End Sub
+
 
 Sub list_type.clear(DisableHeadDelete As Byte=0)
 	MutexLock list_mutex
@@ -131,6 +171,7 @@ Sub list_type.remove(item As utilUDT Ptr,DisableHeadDelete As Byte=0)
 			Else
 				tmp_old->tail=set->tail
 				If set->tail<>0 then set->tail->front=tmp_old
+				If ende = set Then ende = set->front
 				If DisableHeadDelete=0 Then Delete set->head
 				Delete set
 				set=0

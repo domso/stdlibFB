@@ -13,6 +13,7 @@ Type scrollUDT extends graphicUDT
 	Declare virtual Function todo As Byte
 	Declare virtual Sub Paint
 	Declare virtual Sub setStatus(status As Integer)
+	Declare virtual Function toString As String
 End Type
 
 Constructor scrollUDT(position As pointUDT Ptr=0,Width_ As Integer,height As Integer, itemHeight As Integer)
@@ -48,7 +49,7 @@ Function scrollUDT.todo As Byte
 	If enable=0 Then Return 0
 	repaint
 
-	
+
 	
 	If ((height/(itemHeight*maxStatus)))<1  Then
 		button->resize(Width_, height * ((height/(itemHeight*maxStatus))))
@@ -103,3 +104,7 @@ Sub scrollUDT.setStatus(Status As Integer)
 	
 	
 End Sub
+
+Function scrollUDT.toString As String
+	Return "scroll-element"
+End Function
