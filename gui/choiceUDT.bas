@@ -146,13 +146,7 @@ Function choiceUDT.todo As Byte
 			Dim As Integer r=mouseWheel(1)
 			If r<>0 Then
 				scroll->setStatus(scroll->status+r*height)
-			End if
-			'	'Beep
-			'
-			'	wasChanged=1
-			'	
-			'EndIf
-				
+			End If				
 		EndIf
 		
 		
@@ -187,26 +181,7 @@ Function choiceUDT.todo As Byte
 		
 		'scroll->todo
 		if scroll->wasChanged=1 then wasChanged=1
-		
-		
-		If MultiKey(1) Then
-			ScreenUnLock
-			Cls
-			Print scroll->status
-			Print current_scroll_status
-			Print height
-
-			Print "---"
-			item_record_start.out
-			Print "---"
-			panel.graphiclist.out
-			Print "---"			
-			item_record_end.out
-			Sleep
-			ScreenLock
-		EndIf
-		
-		
+	
 	End If
 	
 
