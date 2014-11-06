@@ -13,6 +13,7 @@ Type list_type
 	As Any Ptr list_mutex
 	As Integer itemCount
 	Declare Sub Add(item As utilUDT ptr,DisableRemove As Integer=0)
+	Declare Sub Add(list As list_type ptr)
 	Declare Sub AddFront(item As utilUDT ptr,DisableRemove As Integer=0)
 	
 	
@@ -41,6 +42,8 @@ Constructor list_type
 End Constructor
 
 Destructor list_type
+	MutexLock list_mutex
+	MutexUnLock list_mutex
 	MutexDestroy list_mutex
 End Destructor
 
@@ -81,6 +84,22 @@ Sub list_type.add(data_item As utilUDT Ptr,DisableRemove As Integer=0)
 	MutexUnLock list_mutex
 End Sub
 
+Sub list_type.add(list as list_type ptr)
+	if list = 0 then return
+	mutexlock list_mutex
+	mutexlock list->list_mutex
+	if this.ende<>0 then
+		this.ende->tail = list->start
+		this.ende = list->ende
+		this.itemcount += list->itemcount
+	else
+		this.start = list->start
+		this.ende = list->ende
+		this.itemcount += list->itemcount
+	end if
+	mutexunlock list_mutex
+	mutexunlock list->list_mutex
+end sub
 
 Sub list_type.addFront(data_item As utilUDT Ptr,DisableRemove As Integer=0)
 	

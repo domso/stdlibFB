@@ -64,9 +64,12 @@ Type objUDT extends utilUDT
 		As Integer world
 		Declare Constructor(world As Integer=0)
 		Declare Sub update(item As obj_attributeUDT Ptr)
+		Declare Sub add(id as integer,item as utilUDT ptr)
 		Declare Function getChanges As list_type ptr
+		Declare Function getAll As list_type ptr
 		Declare Function getAttribute(id As Integer) As obj_attributeUDT Ptr
 		Declare Function writeItem(id As Integer,item As utilUDT Ptr,noDelete As UByte=0) As UByte
+		
 End Type
 
 Constructor objUDT(world As Integer=0)
@@ -75,7 +78,12 @@ End Constructor
 
 Sub objUDT.update(item As obj_attributeUDT Ptr)
 	attribute.add(item)
+	item->changed = 1
 End Sub
+
+Sub objUDT.add(id as integer,item as utilUDT ptr)
+	attribute.add(new obj_attributeUDT(item,id))
+end sub
 
 Function objUDT.getChanges As list_type Ptr
 	Dim As list_type Ptr tmp = New list_type
@@ -92,6 +100,12 @@ Function objUDT.getChanges As list_type Ptr
 	Loop Until o = 0
 	Return tmp
 End Function
+
+Function objUDT.getAll as list_type ptr
+	Dim As list_type Ptr tmp = New list_type
+	tmp->add(@attribute)
+	return tmp
+end function
 
 Function objUDT.getAttribute(id As Integer) As obj_attributeUDT ptr
 	Var tmp = New obj_attributeUDT(0,id)

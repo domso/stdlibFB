@@ -1,33 +1,19 @@
 #Include Once "../util/util.bas"
+#Include Once "objUDT.bas"
 
+#define CHARACTERUDT_ATTRIBUTE_BASIC_ID 1
+type characterUDT_attribute_basic extends utilUDT
+	'etc
+	'etc
+end type
 
-
-Type characterUDT extends utilUDT
-	As Integer InvID
-	As Double posX,posY,posZ,speed=1
-	As integer  world=1
-	As Byte toDEL,isOwnCharacter,changed
-	As String* 9 char_Name
+type characterUDT extends objUDT
 	
-	Declare Constructor(char_Name As String)
+	Declare Constructor
+end type
+
+Constructor characterUDT
+	base()
+	base.add(CHARACTERUDT_ATTRIBUTE_BASIC_ID,new characterUDT_attribute_basic)
 	
-	Declare Function equals(o As utilUDT Ptr) As Integer
-	
-	Declare Function toString As String
-
-End Type
-
-Constructor characterUDT(char_Name As String)
-	if len(char_Name)=0 then char_Name="noname"
-	this.char_Name=char_Name
-End Constructor
-
-Function characterUDT.equals(o As utilUDT Ptr) As Integer
-	If o=0 Then Return 0
-	If this.char_Name=Cast(characterUDT ptr,o)->char_Name and this.id=Cast(characterUDT ptr,o)->id Then Return 1
-	Return 0
-End Function
-
-Function characterUDT.toString As String
-	Return "Character: ID="+Str(id)+" Name='"+char_Name+"'"
-End Function
+end Constructor
