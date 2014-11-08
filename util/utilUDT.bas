@@ -130,6 +130,12 @@ Function file2String(file As String,delWS As UByte=0) As String
 	Return outputstring	
 End Function
 
+Function bytetobit(item As UByte,position As UByte)As Ubyte
+	If position>7 Then Return 0
+	'Return ((2^position) And item)Shr position
+	Return (item Shl (7-position))Shr 7
+End Function
+
 Dim shared as String FB_CUSTOMERROR_STRING
 FB_CUSTOMERROR_STRING = "ndef"
 Function getFBerrorMSG(id As UByte) As String

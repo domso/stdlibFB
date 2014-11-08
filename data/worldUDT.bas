@@ -21,7 +21,7 @@ Function worldUDT.getChanges as list_type ptr
 		tmp = cast(objUDT ptr,obj.getItem)
 		if tmp <> 0 then
 			tmp_list = tmp->getChanges
-			return_list->add(tmp_list)
+			return_list->add(tmp_list,1)
 			delete tmp_list
 			tmp_list = 0
 			
@@ -32,7 +32,7 @@ Function worldUDT.getChanges as list_type ptr
 		tmp = cast(objUDT ptr,player.getItem)
 		if tmp <> 0 then
 			tmp_list = tmp->getChanges
-			return_list->add(tmp_list)
+			return_list->add(tmp_list,1)
 			delete tmp_list
 			tmp_list = 0
 			
@@ -52,7 +52,7 @@ Function worldUDT.getAll as list_type ptr
 		tmp = cast(objUDT ptr,obj.getItem)
 		if tmp <> 0 then
 			tmp_list = tmp->getAll
-			return_list->add(tmp_list)
+			return_list->add(tmp_list,1)
 			delete tmp_list
 			tmp_list = 0
 			
@@ -63,7 +63,7 @@ Function worldUDT.getAll as list_type ptr
 		tmp = cast(objUDT ptr,player.getItem)
 		if tmp <> 0 then
 			tmp_list = tmp->getAll
-			return_list->add(tmp_list)
+			return_list->add(tmp_list,1)
 			delete tmp_list
 			tmp_list = 0
 			

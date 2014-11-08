@@ -13,7 +13,7 @@ Type list_type
 	As Any Ptr list_mutex
 	As Integer itemCount
 	Declare Sub Add(item As utilUDT ptr,DisableRemove As Integer=0)
-	Declare Sub Add(list As list_type ptr)
+	Declare Sub Add(list As list_type Ptr,noDelete As Integer=0)
 	Declare Sub AddFront(item As utilUDT ptr,DisableRemove As Integer=0)
 	
 	
@@ -84,21 +84,37 @@ Sub list_type.add(data_item As utilUDT Ptr,DisableRemove As Integer=0)
 	MutexUnLock list_mutex
 End Sub
 
-Sub list_type.add(list as list_type ptr)
-	if list = 0 then return
-	mutexlock list_mutex
-	mutexlock list->list_mutex
-	if this.ende<>0 then
-		this.ende->tail = list->start
-		this.ende = list->ende
-		this.itemcount += list->itemcount
-	else
-		this.start = list->start
-		this.ende = list->ende
-		this.itemcount += list->itemcount
-	end if
-	mutexunlock list_mutex
-	mutexunlock list->list_mutex
+Sub list_type.add(list as list_type Ptr,noDelete As Integer=0)
+	if list = 0 then Return
+	If list->itemCount = 0 Then Return
+	
+	If noDelete = 0 then
+		MutexLock list_mutex
+		MutexLock list->list_mutex
+		if this.ende<>0 then
+			this.ende->tail = list->start
+			this.ende = list->ende
+			this.itemcount += list->itemcount
+		else
+			this.start = list->start
+			this.ende = list->ende
+			this.itemcount += list->itemcount
+		end if
+		MutexUnLock list_mutex
+		MutexUnLock list->list_mutex
+		Delete list
+	Else
+		list->Reset
+		Dim As utilUDT Ptr tmp
+		Do
+			tmp = list->getItem
+			If tmp<>0 Then
+				this.add(tmp,1)
+			EndIf			
+		Loop Until tmp = 0
+		
+		
+	End if
 end sub
 
 Sub list_type.addFront(data_item As utilUDT Ptr,DisableRemove As Integer=0)
