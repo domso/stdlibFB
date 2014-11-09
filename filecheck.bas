@@ -257,7 +257,7 @@ Sub versionUpdate
 				logMSG("download finished")
 				If tmp2<>0 Then
 					If tmp2->file_name = tmp->file_name Then
-						
+						deleteFile("old_"+tmp2->file_name)
 					EndIf
 				EndIf
 			Else
