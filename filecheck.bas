@@ -241,22 +241,28 @@ Sub versionUpdate
 			Do
 				tmp2 = Cast(fileUDT Ptr,fullFileList->getItem)
 				If tmp2 <> 0 Then
-					
 					If tmp2->file_name = tmp->file_name Then
-						logMSG("rename "+tmp2->path + tmp2->file_name + " to " + tmp2->path + "old_"+tmp2->file_name)
-						
-						renameFile(tmp2->file_name,"old_"+tmp2->file_name,tmp2->path)
-						logMSG("start download: "+download_path + tmp2->path + tmp2->file_name)
-						If download(download_path + tmp2->path + tmp2->file_name,tmp2->path + tmp2->file_name)=1 Then
-							logMSG("download finished")
-						Else
-							logMSG("could not download file",-1)
-							renameFile("old_"+tmp2->file_name,tmp2->file_name,tmp2->path)
-							logMSG("rename "+tmp2->path + "old_"+tmp2->file_name + " to " + tmp2->path + tmp2->file_name)
-						EndIf
+						Exit do
 					EndIf
 				EndIf
 			Loop Until tmp2 = 0
+			If tmp2<>0 Then
+				If tmp2->file_name = tmp->file_name Then
+					logMSG("rename "+tmp2->path + tmp2->file_name + " to " + tmp2->path + "old_"+tmp2->file_name)
+					renameFile(tmp2->file_name,"old_"+tmp2->file_name,tmp2->path)
+				EndIf
+			EndIf
+			logMSG("start download: "+download_path + tmp->path + tmp->file_name)
+			If download(download_path + tmp->path + tmp->file_name,tmp->path + tmp->file_name)=1 Then
+				logMSG("download finished")
+			Else
+				logMSG("could not download file",-1)
+				If tmp2->file_name = tmp->file_name Then
+					renameFile("old_"+tmp2->file_name,tmp2->file_name,tmp2->path)
+					logMSG("rename "+tmp2->path + "old_"+tmp2->file_name + " to " + tmp2->path + tmp2->file_name)
+				End if
+			EndIf
+			
 			
 			'renameFile(
 		EndIf

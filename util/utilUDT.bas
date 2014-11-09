@@ -138,7 +138,7 @@ End Function
 
 Function download(url As String,path As String) As UByte
 	#IF DEFINED(__FB_LINUX__)
-	#elseIF DEFINED(__FB_LINUX__)
+	#elseIF DEFINED(__FB_WIN32__)
 		Dim URLDownloadToFile as function (ByVal pCaller As Long,ByVal szURL As zString ptr,ByVal szFileName As zString ptr,ByVal dwReserved As Long,ByVal lpfnCB As Long) As Long
 		Dim lR As Long
 
