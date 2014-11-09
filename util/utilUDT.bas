@@ -184,7 +184,21 @@ Sub deleteFile(file As String)
 	#If DEFINED(__FB_LINUX__)
 		Shell "rm "+file
 	#ELSEIF DEFINED(__FB_WIN32__)
+		If file<>"" then
+			For i As Integer = 0 To Len(file)
+				If file[i] = Asc("/") Then
+					file[i] = Asc("\")
+				EndIf
+			Next
+		End If
 		Shell "del "+file
+		If path<>"" then
+			For i As Integer = 0 To Len(file)
+				If file[i] = Asc("\") Then
+					file[i] = Asc("/")
+				EndIf
+			Next
+		End If
 	#EndIf
 End Sub
 
