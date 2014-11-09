@@ -259,7 +259,6 @@ Sub versionUpdate
 				If tmp2<>0 Then
 					If tmp2->file_name = tmp->file_name Then
 						logMSG("delete old file: "+"old_"+tmp2->file_name)
-						logMSG(tmp2->path+"old_"+tmp2->file_name)
 						deleteFile(tmp2->path+"old_"+tmp2->file_name)  
 						fullFileList->remove(tmp2)
 						fullFileList->Add(tmp,1)
@@ -303,16 +302,14 @@ Sub msgLogThread(x As Any Ptr)
 End Sub
 
 Var x = ThreadCreate(@msgLogThread)
+beep
 directoryLookUp
 createCheckSum
 loadVersion("version.txt",1)
-
 check4differences
 'fullFileList_difference->out
 versionUpdate
-saveVersion("version.txt")
-
-
+SaveVersion("version.txt")
 '
 'fullFileLoadList.out
 

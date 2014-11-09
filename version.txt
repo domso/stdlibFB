@@ -76,7 +76,8 @@
 <file<util.bas/><./util//><2025962898/>/>
 <file<utilUDT.bas/><./util//><3282325984/>/>
 <file<variableUDT.bas/><./util//><3821988631/>/>
-<file<filecheck.bas/><.//><832304512/>/>
+<file<filecheck.bas/><.//><1570119104/>/>
+<file<filecheck.exe/><.//><3085411324/>/>
 <file<LICENSE/><.//><1038504098/>/>
 <file<main.bas/><.//><888541508/>/>
 <file<main_client.bas/><.//><791611165/>/>
@@ -84,4 +85,6 @@
 <file<test.bas/><.//><2620839411/>/>
 <file<test.conf/><.//><1259385003/>/>
 <file<testGUI.bas/><.//><3189031099/>/>
+<file<version.txt/><.//><3668628254/>/>
+<file<filecheck.bas/><.//><832304512/>/>
 <file<version.txt/><.//><3810319724/>/>
