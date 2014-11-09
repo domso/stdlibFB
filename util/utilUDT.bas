@@ -192,7 +192,7 @@ Sub deleteFile(file As String)
 			Next
 		End If
 		Shell "del "+file
-		If path<>"" then
+		If file<>"" then
 			For i As Integer = 0 To Len(file)
 				If file[i] = Asc("\") Then
 					file[i] = Asc("/")

@@ -231,7 +231,7 @@ Sub versionUpdate
 	EndIf
 	
 	fullFileList_difference->reset
-	
+	Dim As Byte completePatch=1
 	Dim As fileUDT Ptr tmp
 	Dim As fileUDT Ptr tmp2
 	Do
@@ -255,20 +255,25 @@ Sub versionUpdate
 			logMSG("start download: "+download_path + tmp->path + tmp->file_name)
 			If download(download_path + tmp->path + tmp->file_name,tmp->path + tmp->file_name)=1 Then
 				logMSG("download finished") 
+				
 				If tmp2<>0 Then
 					If tmp2->file_name = tmp->file_name Then
 						logMSG("delete old file: "+"old_"+tmp2->file_name)
 						logMSG(tmp2->path+"old_"+tmp2->file_name)
 						deleteFile(tmp2->path+"old_"+tmp2->file_name)  
+						fullFileList->remove(tmp2)
+						fullFileList->Add(tmp,1)
 					EndIf
 				EndIf
 			Else
 				logMSG("could not download file",-1)
+				completePatch = 0
 				If tmp2<>0 Then
 					If tmp2->file_name = tmp->file_name Then
 						renameFile("old_"+tmp2->file_name,tmp2->file_name,tmp2->path)
 						logMSG("rename "+tmp2->path + "old_"+tmp2->file_name + " to " + tmp2->path + tmp2->file_name)
-					End if
+					End If
+					fullFileList->remove(tmp2)
 				End if
 			EndIf
 			
@@ -276,9 +281,17 @@ Sub versionUpdate
 			'renameFile(
 		EndIf
 	Loop Until tmp = 0
+	fullFileList_difference->clear(1)
+	If fullFileList_update <> 0 Then
+		fullFileList_update->Clear(1)
+	EndIf
 	
 	
-	logMSG("finish updating",2)
+	If completePatch then
+		logMSG("finish updating",2)
+	Else
+		logMSG("finish updating, but could not download all files",-1)
+	End if
 End Sub
 
 Sub msgLogThread(x As Any Ptr)
