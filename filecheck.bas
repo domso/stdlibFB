@@ -303,13 +303,15 @@ Sub msgLogThread(x As Any Ptr)
 End Sub
 
 Var x = ThreadCreate(@msgLogThread)
-beep
 directoryLookUp
 createCheckSum
 loadVersion("version.txt",1)
+
 check4differences
 'fullFileList_difference->out
 versionUpdate
+saveVersion("version.txt")
+
 
 '
 'fullFileLoadList.out
