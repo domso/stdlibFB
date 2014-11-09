@@ -1,4 +1,6 @@
 #Include Once "../util/util.bas"
+#Include Once "TSNE_V3.bi"
+#Include Once "TSNEX_V3.bi"
 #Include Once "networkMSG.bas"
 #Include Once "networkData.bas"
 #Include Once "networkUDT.bas"

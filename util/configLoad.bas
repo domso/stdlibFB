@@ -1,6 +1,7 @@
 #Include Once "linklist.bas"
 
 Dim Shared As list_type GLOBAL_CONFIG_LIST
+
 Type configUDT extends utilUDT
 	As String item
 	As String value

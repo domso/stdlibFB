@@ -1,10 +1,14 @@
 #Include Once "linklist.bas"
+#Include Once "CRC32_checksum.bas"
 #Include Once "dir.bi"
 
 Type fileUDT extends utilUDT
 	As String file_name,path
+	As list_type Ptr hashList
 	Declare Constructor(path As String,file_name As String)
 	Declare Function toString As String
+	Declare Function equals(o As utilUDT Ptr) As Integer
+	Declare Sub createCheckSum
 End Type
 
 Constructor fileUDT(path As String,file_name As String)
@@ -19,6 +23,40 @@ Function fileUDT.toString As String
 	Return "File: " + path + file_name
 End Function
 
+Function fileUDT.equals(o As utilUDT Ptr) As Integer
+	If o = 0 Then Return 0
+	Dim As fileUDT Ptr tmp = Cast(fileUDT Ptr,o)
+	Dim As crc32_hash Ptr tmpHash
+	
+	If this.file_name <> tmp->file_name Then Return 0
+	If this.path <>  tmp->path Then Return 0
+	
+	If tmp->hashList = 0 Then
+		If this.hashList = 0 Then
+			Return 1
+		EndIf
+		Return 0
+	EndIf
+	This.hashlist->Reset
+	tmp->hashList->Reset
+	
+	Do
+		tmpHash = Cast(crc32_hash Ptr,this.hashlist->getItem)
+		If tmpHash <> 0 Then
+			If tmpHash->equals(Cast(crc32_hash Ptr,tmp->hashlist->getItem)) = 0 Then
+				Return 0
+			EndIf
+		EndIf
+	Loop Until tmpHash = 0
+	
+	
+	Return 1
+End Function
+
+Sub fileUDT.createCheckSum
+	hashList = crc32(path + file_name)
+End Sub
+
 Type directoryTreeUDT extends utilUDT
 	As String directory_name,path,directory_path
 	
@@ -26,9 +64,9 @@ Type directoryTreeUDT extends utilUDT
 	As list_type directory_list
 
 	Declare Constructor(path As String,directory_name As String)
+	Declare Destructor
 	Declare Sub clearTree
 	Declare Sub updateTree
-	Declare Sub update_direct_directory_list
 	Declare virtual Function todo As Byte
 	Declare virtual Function equals(o As utilUDT Ptr) As Integer
 	Declare Function toString As String
@@ -40,14 +78,17 @@ End Type
 Constructor directoryTreeUDT(path As String,directory_name As String)
 	this.directory_name = directory_name
 	this.path = path
-	If Right(this.path,1)<>"/" and Right(this.path,1)<>"\" Then
-		this.path += "/"
-	EndIf
 	If Right(directory_name,1)<>"/" and Right(directory_name,1)<>"\" Then
 		directory_name += "/"
 	EndIf
 	directory_path = this.path + directory_name
+
 End Constructor
+
+Destructor directoryTreeUDT
+	file_list.clear
+	directory_list.clear
+End Destructor
 
 Function directoryTreeUDT.equals(o As utilUDT Ptr) As Integer
 	If o = 0 Then Return 0
@@ -114,7 +155,6 @@ Function directoryTreeUDT.getAllDirectories As list_type Ptr
 	Dim As list_type Ptr tmp = New list_type
 	directory_list.reset
 	Dim As directoryTreeUDT Ptr tmpDTU
-	Dim As directoryTreeUDT Ptr tmpDTU2
 	Do
 		tmpDTU = Cast(directoryTreeUDT Ptr,directory_list.getItem)
 		If tmpDTU <> 0 Then
@@ -127,13 +167,4 @@ Function directoryTreeUDT.getAllDirectories As list_type Ptr
 	tmp->add(@directory_list,1)
 	Return tmp
 End Function
-
-
-Dim As directoryTreeUDT Ptr tmp = New directoryTreeUDT("../../../../","fbcc")
-tmp->updateTree
-
-tmp->getAllDirectories->out
-
-Print "--"
-sleep
 

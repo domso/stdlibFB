@@ -15,7 +15,7 @@ End Constructor
 
  
 Function GLOBAL_choice_load_UDT.action(list As list_type Ptr,parent As Any Ptr=0) As UByte
-		Dim As graphicUDT Ptr tmp = New choiceUDT(New pointUDT(0,0),1,1)
+	Dim As graphicUDT Ptr tmp = New choiceUDT(New pointUDT(0,0),1,1)
 	If setBasicGraphicStats(tmp,list)=0 Then Return 0
 	If list=0 Then Return 0
 	

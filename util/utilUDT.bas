@@ -136,6 +136,50 @@ Function bytetobit(item As UByte,position As UByte)As Ubyte
 	Return (item Shl (7-position))Shr 7
 End Function
 
+Function download(url As String,path As String) As UByte
+	#IF DEFINED(__FB_LINUX__)
+	#elseIF DEFINED(__FB_LINUX__)
+		Dim URLDownloadToFile as function (ByVal pCaller As Long,ByVal szURL As zString ptr,ByVal szFileName As zString ptr,ByVal dwReserved As Long,ByVal lpfnCB As Long) As Long
+		Dim lR As Long
+
+		Dim library As Any Ptr
+		library=dylibload( "urlmon.dll" )
+		URLDownloadToFile=dylibsymbol(library, "URLDownloadToFileA" )
+		lR = URLDownloadToFile(0, url, path, 0, 0)
+		DylibFree library
+
+		If lR = 0 Then
+		  Return 1
+		Else
+		  Return 0
+		End If
+
+	#EndIf
+	Return 0
+End Function
+
+Sub renameFile(file1 As String,file2 As String,path As String="")
+	#IF DEFINED(__FB_LINUX__)
+		Shell ("mv "+path+file1+" "+path+file2
+	#ELSEIF DEFINED(__FB_WIN32__)
+		If path<>"" then
+			For i As Integer = 0 To Len(path)
+				If path[i] = Asc("/") Then
+					path[i] = Asc("\")
+				EndIf
+			Next
+		End if
+		Shell "rename "+path+file1+" "+file2
+		If path<>"" then
+			For i As Integer = 0 To Len(path)
+				If path[i] = Asc("\") Then
+					path[i] = Asc("/")
+				EndIf
+			Next
+		End If
+	#endif
+End Sub
+
 Dim shared as String FB_CUSTOMERROR_STRING
 FB_CUSTOMERROR_STRING = "ndef"
 Function getFBerrorMSG(id As UByte) As String
