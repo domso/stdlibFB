@@ -301,15 +301,47 @@ Sub msgLogThread(x As Any Ptr)
 	loop
 End Sub
 
-Var x = ThreadCreate(@msgLogThread)
-beep
-directoryLookUp
-createCheckSum
-loadVersion("version.txt",1)
-check4differences
-'fullFileList_difference->out
-versionUpdate
-SaveVersion("version.txt")
+'Var x = ThreadCreate(@msgLogThread)
+
+Dim As String cmdinput
+do
+Input cmdinput
+
+Select Case cmdinput
+	Case "lookUp"
+		directoryLookUp
+		msgLog.out
+		msgLog.clear
+	Case "checksum"
+		createCheckSum
+		msgLog.out
+		msgLog.clear
+	Case "load"
+		loadVersion("version.txt",1)
+		msgLog.out
+		msgLog.clear
+	Case "save"
+		saveVersion("version.txt")
+		msgLog.out
+		msgLog.clear
+	Case "check"
+		check4differences
+		msgLog.out
+		msgLog.clear
+	Case "update"
+		versionUpdate
+		msgLog.out
+		msgLog.clear
+End Select
+
+Loop Until cmdinput = "exit"
+
+'createCheckSum
+'loadVersion("version.txt",1)
+'check4differences
+''fullFileList_difference->out
+'versionUpdate
+
 '
 'fullFileLoadList.out
 
