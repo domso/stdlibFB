@@ -180,6 +180,14 @@ Sub renameFile(file1 As String,file2 As String,path As String="")
 	#endif
 End Sub
 
+Sub deleteFile(file As String)
+	#If DEFINED(__FB_LINUX__)
+		Shell "rm "+file
+	#ELSEIF DEFINED(__FB_WIN32__)
+		Shell "del "+file
+	#EndIf
+End Sub
+
 Dim shared as String FB_CUSTOMERROR_STRING
 FB_CUSTOMERROR_STRING = "ndef"
 Function getFBerrorMSG(id As UByte) As String
