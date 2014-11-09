@@ -254,10 +254,12 @@ Sub versionUpdate
 			EndIf
 			logMSG("start download: "+download_path + tmp->path + tmp->file_name)
 			If download(download_path + tmp->path + tmp->file_name,tmp->path + tmp->file_name)=1 Then
-				logMSG("download finished")
+				logMSG("download finished") 
 				If tmp2<>0 Then
 					If tmp2->file_name = tmp->file_name Then
-						deleteFile("old_"+tmp2->file_name)
+						logMSG("delete old file: "+"old_"+tmp2->file_name)
+						logMSG(tmp2->path+"old_"+tmp2->file_name)
+						deleteFile(tmp2->path+"old_"+tmp2->file_name)  
 					EndIf
 				EndIf
 			Else
