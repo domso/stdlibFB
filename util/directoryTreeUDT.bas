@@ -116,21 +116,22 @@ Sub directoryTreeUDT.updateTree
 	Dim AS String tmp_file_name
    tmp_file_name = DIR(directory_path+"*", 0)
    Do
-   	If tmp_file_name <> "." And tmp_file_name <> ".." Then
+   	If tmp_file_name <> "." And tmp_file_name <> ".." and tmp_file_name <> "" Then
    		file_list.add(New fileUDT(this.path + this.directory_name ,tmp_file_name),1)
    	EndIf
       tmp_file_name = DIR("",0)
    LOOP WHILE LEN(tmp_file_name)
-   
+
    Dim AS String tmp_directory_name
    tmp_directory_name = DIR(directory_path+"*", fbDirectory)
    Do
-   	If tmp_directory_name <> "." And tmp_directory_name <> ".." Then
+   	If tmp_directory_name <> "." And tmp_directory_name <> ".." and tmp_directory_name <> "" Then
    		Var tmp = New directoryTreeUDT(directory_path ,tmp_directory_name)
    		directory_list.add(tmp,1)
    	EndIf
       tmp_directory_name = DIR("",fbDirectory)
    LOOP WHILE LEN(tmp_directory_name)
+ 
    directory_list.execute
 End Sub
 
@@ -143,11 +144,11 @@ Function directoryTreeUDT.getAllFiles As list_type Ptr
 		tmpDTU = Cast(directoryTreeUDT Ptr,directory_list.getItem)
 		If tmpDTU <> 0 Then
 			Var tmpl = tmpDTU->getAllFiles
-			tmp->Add(tmpl)
+			tmp->Add(tmpl,1)
 			Delete tmpl
 		EndIf
 	Loop Until tmpDTU = 0
-	tmp->add(@file_list)
+	tmp->add(@file_list,1)
 	Return tmp
 End Function
 

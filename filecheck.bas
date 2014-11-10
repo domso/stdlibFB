@@ -103,7 +103,7 @@ Sub directoryLookUp
 		logMSG("delete old file list",-2)
 		Delete fullFileList
 	EndIf
-	fullFileList = directoryTree->getAllFiles
+	FullFileList = directoryTree->getAllFiles
 	logMSG("finish look up",2)
 End Sub
 
@@ -305,8 +305,9 @@ End Sub
 
 Dim As String cmdinput
 do
-Input cmdinput
 
+Input cmdinput
+  
 Select Case cmdinput
 	Case "lookUp"
 		directoryLookUp

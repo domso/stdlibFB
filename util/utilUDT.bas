@@ -160,7 +160,7 @@ End Function
 
 Sub renameFile(file1 As String,file2 As String,path As String="")
 	#IF DEFINED(__FB_LINUX__)
-		Shell ("mv "+path+file1+" "+path+file2
+		Shell ("mv "+path+file1+" "+path+file2)
 	#ELSEIF DEFINED(__FB_WIN32__)
 		If path<>"" then
 			For i As Integer = 0 To Len(path)
