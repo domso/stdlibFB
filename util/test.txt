@@ -68,6 +68,19 @@
 			
 		/>
 		
+		<progressbar
+			<height
+				<50/>
+			/>
+			<width
+				<200/>
+			/>
+			<process
+				<var<processvar/>/>
+			/>
+
+		/>
+		
 		<checkbox
 			<height<10/>/>
 			<width<10/>/>

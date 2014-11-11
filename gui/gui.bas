@@ -12,3 +12,4 @@
 #Include Once "windowUDT.bas"
 #Include Once "GlobalGUI.bas"
 #Include Once "waitUDT.bas"
+#Include Once "progressBarUDT.bas"

@@ -303,6 +303,12 @@ End Sub
 
 'Var x = ThreadCreate(@msgLogThread)
 
+addToIgnoreList(".bas")
+addToIgnoreList(".bi")
+addToIgnoreList(".txt")
+addToIgnoreList(".conf")
+
+
 Dim As String cmdinput
 do
 
@@ -313,6 +319,7 @@ Select Case cmdinput
 		directoryLookUp
 		msgLog.out
 		msgLog.clear
+		
 	Case "checksum"
 		createCheckSum
 		msgLog.out

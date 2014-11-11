@@ -31,7 +31,7 @@ Type graphicUDT extends utilUDT
 	As Double polling_last
 	As Double polling=0.5
 	As Byte wasClicked=0,EnablePolling=0
-	As Byte isActionSet=0,enable=1,isResizeable=1,isRezing,isMoveable=1,isMoving,lastMouseWheelState,EnableMouse=1,EnableFullMove=0,AllowMouseOverEffect=1,EnableMouseClick=1,EnableChildObjects=0
+	As Byte isActionSet=0,enable=1,isResizeable=1,isRezing,isgrey,noTextParse=0,isMoveable=1,isMoving,lastMouseWheelState,EnableMouse=1,EnableFullMove=0,AllowMouseOverEffect=1,EnableMouseClick=1,EnableChildObjects=0
 	As pointUDT position
 	As pointUDT positionBuffer '??
 	As integer Width_,height 
@@ -44,6 +44,7 @@ Type graphicUDT extends utilUDT
 	Declare virtual Sub repaint
 	Declare virtual Sub paint
 	Declare virtual Sub paintText
+	Declare virtual Sub greyPaint
 	Declare virtual Sub resize(set_x As double=0,set_y As Double = 0)
 	Declare virtual Sub EnableChild(enable As Ubyte)
 	Declare virtual Sub move
@@ -107,7 +108,12 @@ End Function
 
 
 Sub graphicUDT.painttext
-			Dim As GLOBAL_CURSOR_UDT Ptr GLOBAL_CURSOR_tmp = New GLOBAL_CURSOR_UDT
+	if noTextParse then
+		draw String buffer(1),(Width_/2-Len(text)*4,height/2-4),text,RGB(255,255,255)
+		draw String buffer(2),(Width_/2-Len(text)*4,height/2-4),text,RGB(255,255,255)
+	end if
+	
+		Dim As GLOBAL_CURSOR_UDT Ptr GLOBAL_CURSOR_tmp = New GLOBAL_CURSOR_UDT
 		GLOBAL_CURSOR_tmp->x = GLOBAL_CURSOR.x
 		GLOBAL_CURSOR_tmp->y = GLOBAL_CURSOR.y
 		GLOBAL_CURSOR_tmp->height = GLOBAL_CURSOR.height
@@ -174,14 +180,36 @@ Sub graphicUDT.paint
 	
 End Sub
 
+Sub graphicUDT.greyPaint
+	if isgrey=0 then return
+	for x as integer = 0 to width_
+		for y as integer = 0 to height
+			dim as integer tmpCol = point(x,y,buffer(1)) 
+			dim as integer tmpColGrey = (CUINT(tmpCol) shr 16 and 255)*0.299+(CUINT(tmpCol) shr 8 and 255)*0.587+(CUINT(tmpCol) and 255)*0.114
+			line buffer(1),(x,y)-(x,y),rgb(tmpColGrey,tmpColGrey,tmpColGrey)
+			
+			tmpCol = point(x,y,buffer(2)) 
+			tmpColGrey = (CUINT(tmpCol) shr 16 and 255)*0.299+(CUINT(tmpCol) shr 8 and 255)*0.587+(CUINT(tmpCol) and 255)*0.114
+			line buffer(2),(x,y)-(x,y),rgb(tmpColGrey,tmpColGrey,tmpColGrey)
+		next
+	next
+end sub
+
 Sub graphicUDT.repaint
 	If enable=1 Then
-		If wasChanged=1 Then Paint : painttext
+		If wasChanged=1 Then 
+			Paint 
+			painttext
+			greyPaint
+		end if
 		If EnablePolling=1 then
 			If (Timer-polling_last)>polling Then 
 				polling_last=timer
 				Paint
 				painttext
+				greyPaint
+				
+				
 			EndIf
 		End If
 		

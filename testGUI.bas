@@ -10,6 +10,7 @@ ScreenRes 800,600,32
 #Include Once "gui/msgboxUDT.bas"
 #Include Once "gui/windowUDT.bas"
 #Include Once "gui/waitUDT.bas"
+#Include Once "gui/progressBarUDT.bas"
 
 
 
@@ -43,6 +44,15 @@ test=New buttonUDT("BEEP",New pointUDT(200,100),50,30,@sub_beep)
 p->AddGraphic(test)
 
 
+Dim as double ttt
+var tbar = new progressBarUDT(new pointUDT(100,400),200,50,@ttt)
+p->AddGraphic(tbar)
+
+
+var tt = new timerUDT(@ttt,0.5,0.01)
+
+
+
 '####################################################################
 
 
@@ -70,6 +80,9 @@ Var test5b=New menuUDT("menu2",New pointUDT(0,0),50,20,0)
 test5b->Add("sidfh")
 test5b->Add("sub_beep",@sub_beep)
 test5a->Add(test5b)
+
+
+
 
 '####################################################################
 

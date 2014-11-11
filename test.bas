@@ -14,7 +14,9 @@ ScreenRes 800,600,32
 #Include Once "lang/wait.bas"
 #Include Once "lang/textfield.bas"
 #Include Once "lang/msgbox.bas"
+#Include Once "lang/progressBar.bas"
 #Include Once "gui/gui.bas"
+
 
 
 
@@ -56,7 +58,13 @@ Dim As variableUDT testvar3 = "beep"
 testvar3.Data = @testbeep
 testvar3.setPTR
 
+DIm as double processvar_double = 0
+var tmpTimer = new timerUDT(@processvar_double,1,0.01)
 
+
+Dim as variableUDT processvar = "processvar"
+processvar.data = @processvar_double
+processvar.setPTR
 
 
 Dim As Double zeit = timer
@@ -118,7 +126,7 @@ Do
 		'WindowTitle Str(GLOBAL_GUI_WINDOW_LIST.itemCount)
 		fpscount+=1
 		fps+=int(1/(Timer-zeit))
-	'	WindowTitle(Str(int(fps/fpscount)))
+		WindowTitle(Str(int(fps/fpscount)))
 	EndIf
 	
 	screenunlock

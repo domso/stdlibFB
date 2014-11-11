@@ -57,6 +57,40 @@ Sub fileUDT.createCheckSum
 	hashList = crc32(path + file_name)
 End Sub
 
+Dim shared as list_type GLOBAL_FILE_IGNORE_LIST
+
+type file_ignoreUDT extends utilUDT
+	as String pattern
+	Declare Constructor (pattern as String)
+	Declare Function isValid(pattern as String) as Ubyte
+end type
+
+Constructor file_ignoreUDT (pattern as String)
+	this.pattern = pattern
+end Constructor
+
+Function file_ignoreUDT.isValid(pattern as String) as Ubyte
+	if instr(pattern,this.pattern)=0 then return 1
+	return 0
+end function
+
+Sub addToIgnoreList(filePattern as String)
+	GLOBAL_FILE_IGNORE_LIST.add(new file_ignoreUDT(filePattern),1)
+	
+End Sub
+
+Function file_is_valid (pattern as String) as Ubyte
+	Dim as file_ignoreUDT ptr tmp
+	GLOBAL_FILE_IGNORE_LIST.reset
+	do
+		tmp = cast(file_ignoreUDT ptr,GLOBAL_FILE_IGNORE_LIST.getItem)
+		if tmp <> 0 then
+			if tmp->isValid(pattern)=0 then return 0
+		end if
+	loop until tmp = 0
+	return 1
+end Function
+
 Type directoryTreeUDT extends utilUDT
 	As String directory_name,path,directory_path
 	
@@ -117,7 +151,9 @@ Sub directoryTreeUDT.updateTree
    tmp_file_name = DIR(directory_path+"*", 0)
    Do
    	If tmp_file_name <> "." And tmp_file_name <> ".." and tmp_file_name <> "" Then
-   		file_list.add(New fileUDT(this.path + this.directory_name ,tmp_file_name),1)
+		if file_is_valid(tmp_file_name) then
+			file_list.add(New fileUDT(this.path + this.directory_name ,tmp_file_name),1)
+   		end if
    	EndIf
       tmp_file_name = DIR("",0)
    LOOP WHILE LEN(tmp_file_name)
