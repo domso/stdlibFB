@@ -103,7 +103,7 @@ Dim As GLOBAL_FILE_LOAD_UDT Ptr GLOBAL_FILE_LOAD = New GLOBAL_FILE_LOAD_UDT
 '#########################################################################################################
 Dim shared As Any Ptr action_exit_flag_mutex
 action_exit_flag_mutex = mutexCreate
-Dim Shared As UByte action_exit_flag = 0
+Dim Shared As UByte action_exit_flag = 1
 
 Function get_action_exit_flag As UByte
 	MutexLock action_exit_flag_mutex
@@ -186,13 +186,13 @@ Sub createCheckSum
 			logMSG("checksum for "+tmp->file_name +" created!" )
 			i+=1
 			add_update_process(1/fullFileList->itemcount)
-			logMSG(Str(get_update_process))
 		EndIf
 		If get_action_exit_flag Then
 			logMSG("ABORT!",-2)
 			Exit sub
 		EndIf
 	Loop Until tmp = 0
+	set_update_process(1.0)
 	logMSG("finish creating checksums",2)
 End Sub
 
@@ -296,7 +296,7 @@ Sub check4differences
 			Exit sub
 		EndIf
 	Loop Until tmp = 0
-	
+	set_update_process(1.0)
 	
 	
 	logMSG("finish checking",2)
@@ -369,6 +369,7 @@ Sub versionUpdate
 		EndIf
 	Loop Until tmp = 0
 	fullFileList_difference->clear(1)
+	set_update_process(1.0)
 	If fullFileList_update <> 0 Then
 		fullFileList_update->Clear(1)
 	EndIf
@@ -446,9 +447,9 @@ Sub enable_repair_button
 	tmp->wasChanged=1
 End Sub
 
-
-
 Sub repairSub(x As Any Ptr)
+	set_action_exit_flag(0)
+	
 	disable_play_button
 	disable_update_button
 	
@@ -459,22 +460,21 @@ Sub repairSub(x As Any Ptr)
 	
 	enable_play_button
 	enable_update_button
+	set_action_exit_flag(1)
 End Sub
 
-Dim Shared As UByte RepairRunning = 0
-
 Sub repair
-	If RepairRunning = 0 then
+	If get_action_exit_flag = 1 Then
+		set_update_process(0)
 		Var i = ThreadCreate(@repairSub)
-		RepairRunning = 1
-		set_action_exit_flag(0)
 	Else
-		RepairRunning = 0
 		set_action_exit_flag(1)
+		set_update_process(0)
 	End if
 End Sub
 
 Sub updateSub(x As Any Ptr)
+	set_action_exit_flag(0)
 	disable_play_button
 	disable_repair_button
 	
@@ -489,18 +489,16 @@ Sub updateSub(x As Any Ptr)
 	
 	enable_play_button
 	enable_repair_button
+	set_action_exit_flag(1)
 End Sub
 
-Dim Shared As UByte UpdateRunning = 0
-
 Sub update
-	If updateRunning = 0 then
+	If get_action_exit_flag = 1 Then
+		set_update_process(0)
 		Var i = ThreadCreate(@updateSub)
-		updateRunning = 1
-		set_action_exit_flag(0)
 	Else
-		updateRunning = 0
 		set_action_exit_flag(1)
+		set_update_process(0)
 	End If
 End Sub
 

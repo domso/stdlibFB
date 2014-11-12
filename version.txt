@@ -1,11 +1,6 @@
 <file<bild.bmp/><./gui//><3130192941/>/>
-<file<menuUDT.exe/><./gui//><3209110882/>/>
-<file<msgboxUDT.exe/><./gui//><2046786153/>/>
 <file<test.bmp/><./gui//><3011498934/>/>
-<file<color.exe/><./lang//><844370167/>/>
-<file<utilUDT.exe/><./util//><3157701772/>/>
-<file<filecheck.exe/><.//><1446834316/>/>
+<file<filecheck.exe/><.//><3277457879/>/>
 <file<LICENSE/><.//><1038504098/>/>
 <file<README.md/><.//><3810753171/>/>
-<file<test.exe/><.//><1120267347/>/>
-<file<testGUI.exe/><.//><751783389/>/>
+<file<testGUI.exe/><.//><869190684/>/>

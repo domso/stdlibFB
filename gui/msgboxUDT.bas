@@ -10,7 +10,7 @@ Type msgboxUDT extends graphicUDT
 	As String main_string
 	
 	As list_type Ptr msgLog 
-
+	As Integer max_lines = 200
 	As scrollUDT Ptr scroll
 	As Integer line_x,line_y
 	as integer current_scroll_status=0
@@ -148,6 +148,7 @@ Function msgboxUDT.todo As Byte
 				Else
 						main_string += Chr(10)+tmp->toString
 				End If
+				
 				Do
 					pushUp
 					scroll->setStatus(scroll->status+itemHeight)
@@ -232,7 +233,13 @@ Sub msgboxUDT.pushUp
 	If calc_line_y(main_string)<=line_y Then return
 	Dim As Integer tmp = calcStringFirstLine(main_string)
 	If tmp = 0 Then Return 
-	front_string += Mid(main_string,1,tmp)
+	front_string += Mid(main_string,1,tmp)		
+	If calc_line_y(front_string)>max_lines Then
+		Do
+			front_string = Mid(front_string,calcStringFirstLine(front_string)+1)
+		Loop until calc_line_y(front_string)<max_lines*0.5
+	EndIf
+	
 	main_string = Mid(main_string,tmp+1)
 End Sub
 
