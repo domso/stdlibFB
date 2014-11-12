@@ -15,12 +15,13 @@ Dim Shared As list_type Ptr fullFileList_update
 Dim Shared As list_type Ptr fullFileList_difference
 Dim Shared As list_type ptr fullFileLoadList
 Dim Shared As directoryTreeUDT Ptr directoryTree
-Dim Shared As Double update_process_var
+Dim Shared As UByte isValid
 
-Dim Shared As String main_path,download_path
+Dim Shared As String main_path,download_path,version_file,executeable_file
 main_path = "."
 download_path = "https://github.com/domso/noname/raw/master/"
-
+version_file = "version.txt"
+executeable_file = "test.exe"
 GUI_SET(windowx,windowy,125,125,125)
 
 addToIgnoreList(".bas")
@@ -100,7 +101,48 @@ End Function
 Dim As GLOBAL_FILE_LOAD_UDT Ptr GLOBAL_FILE_LOAD = New GLOBAL_FILE_LOAD_UDT
 
 '#########################################################################################################
+Dim shared As Any Ptr action_exit_flag_mutex
+action_exit_flag_mutex = mutexCreate
+Dim Shared As UByte action_exit_flag = 0
 
+Function get_action_exit_flag As UByte
+	MutexLock action_exit_flag_mutex
+	Dim As UByte tmp = action_exit_flag
+	MutexUnLock action_exit_flag_mutex
+	Return tmp
+End Function
+
+Sub set_action_exit_flag(i As UByte)
+	MutexLock action_exit_flag_mutex
+	action_exit_flag = i
+	MutexUnLock action_exit_flag_mutex
+End Sub
+
+
+Dim shared As Any Ptr update_process_mutex
+update_process_mutex = mutexCreate
+Dim Shared As Double update_process_var
+
+Function get_update_process As Double
+	MutexLock update_process_mutex
+	Dim As Double tmp = update_process_var
+	MutexUnLock update_process_mutex
+	Return tmp
+End Function
+
+Sub set_update_process(i As Double)
+	MutexLock update_process_mutex
+	update_process_var = i
+	MutexUnLock update_process_mutex
+End Sub
+
+Sub add_update_process(i As Double)
+	MutexLock update_process_mutex
+	update_process_var += i
+	MutexUnLock update_process_mutex
+End Sub
+
+'#########################################################################################################
 Sub directoryLookUp
 	logMSG("look up directory",1)
 	If directoryTree <> 0 Then 
@@ -134,7 +176,8 @@ Sub createCheckSum
 	EndIf
 	Dim As fileUDT Ptr tmp
 	fullFileList->Reset
-	update_process_var=0.00
+	set_update_process(0.0)
+	logMSG(Str(fullFileList->itemcount))
 	Dim As Integer i
 	Do
 		tmp = Cast(fileUDT Ptr,fullFileList->getItem)
@@ -142,10 +185,14 @@ Sub createCheckSum
 			tmp->createCheckSum
 			logMSG("checksum for "+tmp->file_name +" created!" )
 			i+=1
-			update_process_var+=(1/fullFileList->itemcount)
+			add_update_process(1/fullFileList->itemcount)
+			logMSG(Str(get_update_process))
+		EndIf
+		If get_action_exit_flag Then
+			logMSG("ABORT!",-2)
+			Exit sub
 		EndIf
 	Loop Until tmp = 0
-	update_process_var=1
 	logMSG("finish creating checksums",2)
 End Sub
 
@@ -229,6 +276,8 @@ Sub check4differences
 	EndIf
 	fullFileList_difference = New list_type
 	
+	Dim As Integer i = fullFileList_update->itemcount
+	set_update_process(0.0)
 	fullFileList_update->Reset
 	fullFileList->reset
 	Dim As fileUDT Ptr tmp
@@ -239,6 +288,12 @@ Sub check4differences
 				fullFileList_difference->Add(tmp,1)
 				logMSG("found differences in: "+tmp->file_name)
 			EndIf
+			add_update_process(1/fullFileList_update->itemcount)
+			
+		EndIf
+		If get_action_exit_flag Then
+			logMSG("ABORT!",-2)
+			Exit sub
 		EndIf
 	Loop Until tmp = 0
 	
@@ -258,6 +313,9 @@ Sub versionUpdate
 	Dim As Byte completePatch=1
 	Dim As fileUDT Ptr tmp
 	Dim As fileUDT Ptr tmp2
+	Dim As Integer i = fullFileList_difference->itemcount
+	set_update_process(0.0)
+	
 	Do
 		tmp = Cast(fileUDT Ptr,fullFileList_difference->getItem)
 		If tmp <> 0 Then
@@ -281,7 +339,7 @@ Sub versionUpdate
 				logMSG("download finished") 
 				
 				fullFileList->Add(tmp,1)
-				saveVersion("version.txt")
+				saveVersion(version_file)
 				
 				If tmp2<>0 Then
 					If tmp2->file_name = tmp->file_name Then
@@ -302,9 +360,12 @@ Sub versionUpdate
 					fullFileList->remove(tmp2)
 				End if
 			EndIf
-			
-			
+
+			add_update_process(1/fullFileList_difference->itemcount)
 			'renameFile(
+		EndIf
+		If get_action_exit_flag Then
+			logMSG("ABORT!",-2)
 		EndIf
 	Loop Until tmp = 0
 	fullFileList_difference->clear(1)
@@ -315,6 +376,7 @@ Sub versionUpdate
 	
 	If completePatch then
 		logMSG("finish updating",2)
+		isValid = 1
 	Else
 		logMSG("finish updating, but could not download all files",-1)
 	End if
@@ -323,7 +385,7 @@ End Sub
 '#########################################################################################################
 
 Var NewGraphicIMG = New imgUDT("NEW_GRAPHIC_BACKGROUND","",800,600)
-Line NewGraphicIMG->buffer,(0,0)-(800,600),RGB(0,125,125),bf
+Line NewGraphicIMG->buffer,(0,0)-(800,600),RGBA(0,0,0,0),bf
 
 
 'Var x = ThreadCreate(@msgLogThread)
@@ -339,6 +401,7 @@ Sub disable_play_button
 End Sub
 
 Sub enable_play_button
+	If isValid = 0 Then return
 	Dim As buttonUDT Ptr tmp = Cast(buttonUDT Ptr,get_window_graphic("mainframe","play"))
 	If tmp = 0 Then Return
 	tmp->isGrey = 0
@@ -383,6 +446,8 @@ Sub enable_repair_button
 	tmp->wasChanged=1
 End Sub
 
+
+
 Sub repairSub(x As Any Ptr)
 	disable_play_button
 	disable_update_button
@@ -390,18 +455,24 @@ Sub repairSub(x As Any Ptr)
 	directoryLookUp
 	createCheckSum
 	
-	saveVersion("version.txt")
+	saveVersion(version_file)
 	
 	enable_play_button
 	enable_update_button
 End Sub
 
+Dim Shared As UByte RepairRunning = 0
+
 Sub repair
-
-	Var i = ThreadCreate(@repairSub)
-
+	If RepairRunning = 0 then
+		Var i = ThreadCreate(@repairSub)
+		RepairRunning = 1
+		set_action_exit_flag(0)
+	Else
+		RepairRunning = 0
+		set_action_exit_flag(1)
+	End if
 End Sub
-
 
 Sub updateSub(x As Any Ptr)
 	disable_play_button
@@ -420,10 +491,21 @@ Sub updateSub(x As Any Ptr)
 	enable_repair_button
 End Sub
 
+Dim Shared As UByte UpdateRunning = 0
+
 Sub update
+	If updateRunning = 0 then
+		Var i = ThreadCreate(@updateSub)
+		updateRunning = 1
+		set_action_exit_flag(0)
+	Else
+		updateRunning = 0
+		set_action_exit_flag(1)
+	End If
+End Sub
 
-	Var i = ThreadCreate(@updateSub)
-
+Sub play
+	startprogram(executeable_file)
 End Sub
 
 Sub test_push
@@ -448,6 +530,10 @@ Dim As variableUDT updateVar = "update"
 updateVar.data = @update
 updateVar.setPTR
 
+Dim As variableUDT playVar = "play"
+playVar.data = @play
+playVar.setPTR
+
 Dim As variableUDT beep1 = "disable_play_button"
 beep1.Data = @test_push
 beep1.setPTR
@@ -460,26 +546,27 @@ Dim As variableUDT msglist = "msglist"
 msglist.data = @msgLog
 msglist.setList
 
-
+Dim shared As Double tmp_update_process
 Dim As variableUDT update_process = "update_process"
-update_process.data = @update_process_var
+update_process.data = @tmp_update_process
 update_process.setPTR
 
 '#########################################################################################################
 Dim As String graphic_input_code 
 graphic_input_code += "<setAll<0/><0/><"+Str(windowx)+"/><"+Str(windowy)+"/><0/><0/><8/><8/>/>"
+graphic_input_code += "<color<52/><80/><101/><78/><89/><95/>/>"
 graphic_input_code += "<window<<id_name<mainframe/>/><isfullscreen/>/>"
 graphic_input_code +=  "<"
 
-graphic_input_code +=  "<button<id_name<play/>/><background<NEW_GRAPHIC_BACKGROUND/>/><height<50/>/><width<"+Str(windowx-16)+"/>/><moveable<0/>/><resizeable<0/>/><action<var<disable_play_button/>/>/><text<<text<test1/>/>/>/>/>"
+graphic_input_code +=  "<button<id_name<play/>/><background<NEW_GRAPHIC_BACKGROUND/>/><height<50/>/><width<"+Str(windowx-16)+"/>/><moveable<0/>/><resizeable<0/>/><action<var<play/>/>/><text<<text<test1/>/>/>/>/>"
 
-graphic_input_code +=  "<button<id_name<update/>/><height<50/>/><width<"+Str((windowx-24)/2)+"/>/><moveable<0/>/><resizeable<0/>/><action<var<update/>/>/><text<<text<test2/>/>/>/>/>"
+graphic_input_code +=  "<button<id_name<update/>/><background<NEW_GRAPHIC_BACKGROUND/>/><height<50/>/><width<"+Str((windowx-24)/2)+"/>/><moveable<0/>/><resizeable<0/>/><action<var<update/>/>/><text<<text<test2/>/>/>/>/>"
 graphic_input_code +=  "<r/>"
-graphic_input_code +=  "<button<id_name<repair/>/><height<50/>/><width<"+Str((windowx-24)/2)+"/>/><moveable<0/>/><resizeable<0/>/><action<var<repair/>/>/><text<<text<test2/>/>/>/>/>"
+graphic_input_code +=  "<button<id_name<repair/>/><background<NEW_GRAPHIC_BACKGROUND/>/><height<50/>/><width<"+Str((windowx-24)/2)+"/>/><moveable<0/>/><resizeable<0/>/><action<var<repair/>/>/><text<<text<test2/>/>/>/>/>"
 
-graphic_input_code +=  "<progressbar<height<25/>/><width<"+Str(windowx-16)+"/>/><process<var<update_process/>/>/><moveable<0/>/><resizeable<0/>/><text<<text<test1/>/>/>/>/>"
+graphic_input_code +=  "<progressbar<height<25/>/><background<NEW_GRAPHIC_BACKGROUND/>/><width<"+Str(windowx-16)+"/>/><process<var<update_process/>/>/><moveable<0/>/><resizeable<0/>/><text<<text<test1/>/>/>/>/>"
 
-graphic_input_code +=  "<msgbox<id_name<log/>/><height<100/>/><width<"+Str(windowx-36)+"/>/><list<var<msglist/>/>/><moveable<0/>/><resizeable<0/>/><text<<text<test1/>/>/>/>/>"
+graphic_input_code +=  "<msgbox<id_name<log/>/><background<NEW_GRAPHIC_BACKGROUND/>/><height<100/>/><width<"+Str(windowx-36)+"/>/><list<var<msglist/>/>/><moveable<0/>/><resizeable<0/>/><text<<text<test1/>/>/>/>/>"
 
 
 
@@ -496,7 +583,7 @@ graphicList->Clear
 Delete graphicList
 
 '#########################################################################################################
-
+disable_play_button
 Sub gui
 
 	Dim As Double zeit
@@ -505,6 +592,8 @@ Sub gui
 		ScreenLock
 		Cls
 		GUI_UPDATE
+		
+		tmp_update_process = get_update_process
 		
 		ScreenUnLock
 		Do

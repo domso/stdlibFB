@@ -24,6 +24,7 @@ Constructor scrollUDT(position As pointUDT Ptr=0,Width_ As Integer,height As Int
 	button = New buttonUDT("",New PointUDT(position->x,position->y),width_,height,0)
 	button->isMoveable=0
 	button->isResizeable=0
+	button->background = this.background
 	isResizeable=0
 	base.AllowMouseOverEffect=0
 End Constructor
@@ -31,14 +32,14 @@ End Constructor
 
 Sub scrollUDT.paint
 	Line buffer(1),(0,0)-(Width_-1,height-1),RGBa(red/3,green/3,blue/3,255),bf
-	Line buffer(1),(1,1)-(Width_-1,height-1),RGB(143,76,25),b
-	Line buffer(1),(3,3)-(Width_-1-2,height-1-2),RGB(0,0,0),b
-	Line buffer(1),(2,2)-(Width_-1-1,height-1-1),RGB(0,0,0),b
+	Line buffer(1),(0,0)-(Width_-1,height-1),RGB(143,76,25),b
+	Line buffer(1),(2,2)-(Width_-1-2,height-1-2),RGB(0,0,0),b
+	Line buffer(1),(1,1)-(Width_-1-1,height-1-1),RGB(0,0,0),b
 	
 	Line buffer(2),(0,0)-(Width_-1,height-1),RGBa(red/3,green/3,blue/3,200),bf
-	Line buffer(2),(1,1)-(Width_-1,height-1),RGB(143,76,25),b
-	Line buffer(2),(3,3)-(Width_-1-2,height-1-2),RGB(0,0,0),b
-	Line buffer(2),(2,2)-(Width_-1-1,height-1-1),RGB(0,0,0),b
+	Line buffer(2),(0,0)-(Width_-1,height-1),RGB(143,76,25),b
+	Line buffer(2),(2,2)-(Width_-1-2,height-1-2),RGB(0,0,0),b
+	Line buffer(2),(1,1)-(Width_-1-1,height-1-1),RGB(0,0,0),b
 	
 	'line buffer(1),(Width_*process-1,4)-(width_-4,height-4),rgba(red/3,green/3,blue/3,100),bf
 	'line buffer(2),(Width_*process-1,4)-(width_-4,height-4),rgba(red/3,green/3,blue/3,100),bf
@@ -64,6 +65,9 @@ Function scrollUDT.todo As Byte
 	button->position.x=position.x
 	button->position.y=(status*(height-button->height))/((MaxStatus-(height/itemHeight))) + position.y
 	button->todo
+	If button->background <> this.background Then
+		button->background = this.background
+	EndIf
 	
 	Dim As Integer mx,my,mb
 	If this.GetMouseState(mx,my,,mb) = -1 Then Return 0

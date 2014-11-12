@@ -158,6 +158,14 @@ Function download(url As String,path As String) As UByte
 	Return 0
 End Function
 
+Sub startprogram(cmd As String)
+	#IF DEFINED(__FB_LINUX__)
+		Shell("./"+cmd)
+	#elseIF DEFINED(__FB_WIN32__)
+		Shell("start "+cmd)	
+	#EndIf
+End Sub
+
 Sub renameFile(file1 As String,file2 As String,path As String="")
 	#IF DEFINED(__FB_LINUX__)
 		Shell ("mv "+path+file1+" "+path+file2)

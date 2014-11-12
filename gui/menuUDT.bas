@@ -40,14 +40,14 @@ Sub menuUDT.paint
 	
 
 	Line buffer(1),(0,0)-(Width_-1,height-1),RGBa(red,green,blue,255),bf
-	Line buffer(1),(1,1)-(Width_-1,height-1),RGB(143,76,25),b
-	Line buffer(1),(3,3)-(Width_-1-2,height-1-2),RGB(0,0,0),b
-	Line buffer(1),(2,2)-(Width_-1-1,height-1-1),RGB(0,0,0),b
+	Line buffer(1),(0,0)-(Width_-1,height-1),RGB(143,76,25),b
+	Line buffer(1),(2,2)-(Width_-1-2,height-1-2),RGB(0,0,0),b
+	Line buffer(1),(1,1)-(Width_-1-1,height-1-1),RGB(0,0,0),b
 	
-	Line buffer(2),(0,0)-(Width_-1,height-1),RGBa(200,green,blue,200),bf
-	Line buffer(2),(1,1)-(Width_-1,height-1),RGB(143,76,25),b
-	Line buffer(2),(3,3)-(Width_-1-2,height-1-2),RGB(0,0,0),b
-	Line buffer(2),(2,2)-(Width_-1-1,height-1-1),RGB(0,0,0),b
+	Line buffer(2),(0,0)-(Width_-1,height-1),RGBa(redE,greenE,blueE,200),bf
+	Line buffer(2),(0,0)-(Width_-1,height-1),RGB(143,76,25),b
+	Line buffer(2),(2,2)-(Width_-1-2,height-1-2),RGB(0,0,0),b
+	Line buffer(2),(1,1)-(Width_-1-1,height-1-1),RGB(0,0,0),b
 
 	
 	If background<>0 Then Put buffer(1),(0,0),background->buffer,alpha

@@ -21,28 +21,27 @@ End Constructor
 
 Sub progressBarUDT.paint
 	Line buffer(1),(0,0)-(Width_-1,height-1),RGBa(red,green,blue,255),bf
-	Line buffer(1),(1,1)-(Width_-1,height-1),RGB(143,76,25),b
-	Line buffer(1),(3,3)-(Width_-1-2,height-1-2),RGB(0,0,0),b
-	Line buffer(1),(2,2)-(Width_-1-1,height-1-1),RGB(0,0,0),b
+	Line buffer(1),(0,0)-(Width_-1,height-1),RGB(143,76,25),b
+	Line buffer(1),(2,2)-(Width_-1-2,height-1-2),RGB(0,0,0),b
+	Line buffer(1),(1,1)-(Width_-1-1,height-1-1),RGB(0,0,0),b
 	
-	Line buffer(2),(0,0)-(Width_-1,height-1),RGBa(200,green,blue,200),bf
-	Line buffer(2),(1,1)-(Width_-1,height-1),RGB(143,76,25),b
-	Line buffer(2),(3,3)-(Width_-1-2,height-1-2),RGB(0,0,0),b
-	Line buffer(2),(2,2)-(Width_-1-1,height-1-1),RGB(0,0,0),b
-	
+	Line buffer(2),(0,0)-(Width_-1,height-1),RGBa(redE,greenE,blueE,200),bf
+	Line buffer(2),(0,0)-(Width_-1,height-1),RGB(143,76,25),b
+	Line buffer(2),(2,2)-(Width_-1-2,height-1-2),RGB(0,0,0),b
+	Line buffer(2),(1,1)-(Width_-1-1,height-1-1),RGB(0,0,0),b
 	
 	'line buffer(1),(width_-4,4)-(width_-4-(width_-8)*(1-process)-1,height-4),rgba(red/3,green/3,blue/3,100),bf
 	'line buffer(2),(width_-4,4)-(width_-4-(width_-8)*(1-process)-1,height-4),rgba(red/3,green/3,blue/3,100),bf
-	line buffer(1),(Width_*process-1,4)-(width_-4,height-4),rgba(red/3,green/3,blue/3,100),bf
-	line buffer(2),(Width_*process-1,4)-(width_-4,height-4),rgba(red/3,green/3,blue/3,100),bf
+	line buffer(1),(Width_*process-1,3)-(width_-4,height-3),rgba(red/3,green/3,blue/3,100),bf
+	line buffer(2),(Width_*process-1,3)-(width_-4,height-3),rgba(red/3,green/3,blue/3,100),bf
 	
-	Line buffer(1),(1,1)-(Width_*process-1,height-1),RGB(143,76,25),b
-	Line buffer(1),(3,3)-(Width_*process-1-2,height-1-2),RGB(0,0,0),b
-	Line buffer(1),(2,2)-(Width_*process-1-1,height-1-1),RGB(0,0,0),b
+	Line buffer(1),(0,0)-(Width_*process-1,height-1),RGB(143,76,25),b
+	Line buffer(1),(2,2)-(Width_*process-1-2,height-1-2),RGB(0,0,0),b
+	Line buffer(1),(1,1)-(Width_*process-1-1,height-1-1),RGB(0,0,0),b
 
-	Line buffer(2),(1,1)-(Width_*process-1,height-1),RGB(143,76,25),b
-	Line buffer(2),(3,3)-(Width_*process-1-2,height-1-2),RGB(0,0,0),b
-	Line buffer(2),(2,2)-(Width_*process-1-1,height-1-1),RGB(0,0,0),b	
+	Line buffer(2),(0,0)-(Width_*process-1,height-1),RGB(143,76,25),b
+	Line buffer(2),(2,2)-(Width_*process-1-2,height-1-2),RGB(0,0,0),b
+	Line buffer(2),(1,1)-(Width_*process-1-1,height-1-1),RGB(0,0,0),b	
 	
 
 	

@@ -18,8 +18,19 @@ tmpGraphicIMG = New imgUDT("DEFAULT_WINDOW_BACKGROUND","gui/bild.bmp",900,506)
 '	BLoad "bild.bmp",pergament
 
 'Dim Shared As list_Type graphicList
+Dim Shared As Integer GLOBAL_GRAPHIC_DEFAULT_COLOR_RED
+Dim Shared As Integer GLOBAL_GRAPHIC_DEFAULT_COLOR_GREEN
+Dim Shared As Integer GLOBAL_GRAPHIC_DEFAULT_COLOR_BLUE
+Dim Shared As Integer GLOBAL_GRAPHIC_DEFAULT_COLOR_RED_EFFECT
+Dim Shared As Integer GLOBAL_GRAPHIC_DEFAULT_COLOR_GREEN_EFFECT
+Dim Shared As Integer GLOBAL_GRAPHIC_DEFAULT_COLOR_BLUE_EFFECT
 
-
+GLOBAL_GRAPHIC_DEFAULT_COLOR_RED = 125
+GLOBAL_GRAPHIC_DEFAULT_COLOR_GREEN = 0
+GLOBAL_GRAPHIC_DEFAULT_COLOR_BLUE = 0
+GLOBAL_GRAPHIC_DEFAULT_COLOR_RED_EFFECT = 200
+GLOBAL_GRAPHIC_DEFAULT_COLOR_GREEN_EFFECT = 0
+GLOBAL_GRAPHIC_DEFAULT_COLOR_BLUE_EFFECT = 0
 Type graphicUDT extends utilUDT
 	As String text,id_name 
 	As Any Ptr buffer(1 To 2)
@@ -27,7 +38,8 @@ Type graphicUDT extends utilUDT
 	As imgUDT Ptr background
 	'As UByte disableBackground
 	
-	As UByte red=125,green=0,blue=0
+	As UByte red,green,blue
+	As UByte redE,greenE,blueE
 	As Sub action
 	As Byte wasChanged=1,useAlpha=0
 	As Double polling_last
@@ -83,7 +95,15 @@ Constructor graphicUDT(position As pointUDT Ptr=0,Width_ As Integer=0,height As 
 		background = getIMG("DEFAULT_GRAPHIC_BACKGROUND")
 	Else
 		background = getIMG(bg)
-	End if
+	End If
+	this.red = GLOBAL_GRAPHIC_DEFAULT_COLOR_RED 
+	this.green = GLOBAL_GRAPHIC_DEFAULT_COLOR_GREEN
+	this.blue = GLOBAL_GRAPHIC_DEFAULT_COLOR_BLUE 
+	this.redE = GLOBAL_GRAPHIC_DEFAULT_COLOR_RED_EFFECT
+	this.greenE = GLOBAL_GRAPHIC_DEFAULT_COLOR_GREEN_EFFECT
+	this.blueE = GLOBAL_GRAPHIC_DEFAULT_COLOR_BLUE_EFFECT
+	
+	
 	'graphicList.add(@This,1)
 End Constructor
 

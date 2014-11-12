@@ -27,11 +27,11 @@ End Constructor
 Sub checkboxUDT.paint
 
 	
-	Line buffer(1),(0,0)-(Width_-1,height-1),RGB(125,0,0),bf
+	Line buffer(1),(0,0)-(Width_-1,height-1),RGB(red,green,blue),bf
 	Line buffer(1),(0,0)-(Width_-1,height-1),RGB(0,0,0),b
 	'Line buffer(1),(2,2)-(Width_-1-2,height-1-2),RGB(0,0,0),b
 	
-	Line buffer(2),(0,0)-(Width_-1,height-1),RGB(255,0,0),bf
+	Line buffer(2),(0,0)-(Width_-1,height-1),RGB(redE,greenE,blueE),bf
 	Line buffer(2),(0,0)-(Width_-1,height-1),RGB(0,0,0),b
 	'Line buffer(2),(2,2)-(Width_-1-2,height-1-2),RGB(0,0,0),b
 	

@@ -13,3 +13,4 @@
 #Include Once "lang/textfield.bas"
 #Include Once "lang/msgbox.bas"
 #Include Once "lang/progressBar.bas"
+#Include Once "lang/color.bas"
