@@ -108,13 +108,14 @@ Sub scrollUDT.setStatus(Status As Integer)
 		isLock=1
 		status = ((MaxStatus-(height/itemHeight))) * ((button->position.y-position.y) / (height-button->height))
 		wasChanged=1
+		todo
 		return
 	EndIf
 	
 	this.status=status
 	button->position.y = (status*(height-button->height))\((MaxStatus-(height/itemHeight))) + position.y
 	If button->position.y+button->height>position.y+height Then button->position.y = position.y+height-button->height : isLock=1
-	
+	todo
 End Sub
 
 Function scrollUDT.toString As String

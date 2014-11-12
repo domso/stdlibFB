@@ -387,21 +387,37 @@ Sub repairSub(x As Any Ptr)
 	directoryLookUp
 	createCheckSum
 	
+	saveVersion("version.txt")
+	
 	enable_play_button
 	enable_update_button
 End Sub
 
-Sub testasd(x As Any Ptr)
-	For i As Integer = 1 To 10000
-		If i Mod 100 = 0 Then logMSG("test"+Str(i))
-		Sleep 10,1
-	Next
-End Sub
-
 Sub repair
 
-	Var i = ThreadCreate(@testasd)
+	Var i = ThreadCreate(@repairSub)
 
+End Sub
+
+
+Sub updateSub(x As Any Ptr)
+	disable_play_button
+	disable_repair_button
+	
+	'directoryLookUp
+	'createCheckSum
+	download(download_path+"version.txt","./version_neu.txt")
+	loadVersion("version.txt")
+	loadVersion("version_neu.txt",1)
+	check4differences
+	
+	enable_play_button
+	enable_repair_button
+End Sub
+
+Sub update
+
+	Var i = ThreadCreate(@updateSub)
 
 End Sub
 
@@ -422,6 +438,10 @@ End Sub
 Dim As variableUDT repairVar = "repair"
 repairVar.data = @repair
 repairVar.setPTR
+
+Dim As variableUDT updateVar = "update"
+updateVar.data = @update
+updateVar.setPTR
 
 Dim As variableUDT beep1 = "disable_play_button"
 beep1.Data = @test_push
@@ -448,7 +468,7 @@ graphic_input_code +=  "<"
 
 graphic_input_code +=  "<button<id_name<play/>/><height<50/>/><width<"+Str(windowx-16)+"/>/><moveable<0/>/><resizeable<0/>/><action<var<disable_play_button/>/>/><text<<text<test1/>/>/>/>/>"
 
-graphic_input_code +=  "<button<id_name<update/>/><height<50/>/><width<"+Str((windowx-24)/2)+"/>/><moveable<0/>/><resizeable<0/>/><action<var<disable_play_button2/>/>/><text<<text<test2/>/>/>/>/>"
+graphic_input_code +=  "<button<id_name<update/>/><height<50/>/><width<"+Str((windowx-24)/2)+"/>/><moveable<0/>/><resizeable<0/>/><action<var<update/>/>/><text<<text<test2/>/>/>/>/>"
 graphic_input_code +=  "<r/>"
 graphic_input_code +=  "<button<id_name<repair/>/><height<50/>/><width<"+Str((windowx-24)/2)+"/>/><moveable<0/>/><resizeable<0/>/><action<var<repair/>/>/><text<<text<test2/>/>/>/>/>"
 
