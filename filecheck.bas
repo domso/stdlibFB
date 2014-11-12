@@ -1,18 +1,38 @@
+Dim Shared As Integer windowx,windowy
+windowx = 400
+windowy = 400
+ScreenRes windowx,windowy,32
+
 #Include Once "util/util.bas"
 #Include Once "util/CRC32_checksum.bas"
+#Include Once "gui/gui.bas"
+#Include Once "lang/lang.bas"
+
 
 Dim Shared As list_type Ptr fullDirectoryList
 Dim Shared As list_type Ptr fullFileList
-
 Dim Shared As list_type Ptr fullFileList_update
 Dim Shared As list_type Ptr fullFileList_difference
-
 Dim Shared As list_type ptr fullFileLoadList
-
 Dim Shared As directoryTreeUDT Ptr directoryTree
 
-Dim Shared As list_type MSGlog
- 
+
+Dim Shared As String main_path,download_path
+main_path = "."
+download_path = "https://github.com/domso/noname/raw/master/"
+
+
+GUI_SET(windowx,windowy,125,125,125)
+
+addToIgnoreList(".bas")
+addToIgnoreList(".bi")
+addToIgnoreList(".txt")
+addToIgnoreList(".conf")
+
+
+'#########################################################################################################
+
+ Dim Shared As list_type MSGlog
 Type MSGlogUDT extends utilUDT
 	As String msg
 	Declare Constructor(msg As String,msg_type As Byte)
@@ -35,6 +55,8 @@ End Function
 Sub logMSG(msg As String,msg_type As Byte=0)
 	MSGlog.add(New MSGlogUDT(msg,msg_type),1)
 End Sub
+
+'#########################################################################################################
 
 Type GLOBAL_FILE_LOAD_UDT extends commandUDT
 	Declare Constructor
@@ -78,9 +100,7 @@ End Function
 
 Dim As GLOBAL_FILE_LOAD_UDT Ptr GLOBAL_FILE_LOAD = New GLOBAL_FILE_LOAD_UDT
 
-Dim Shared As String main_path,download_path
-main_path = "."
-download_path = "https://github.com/domso/noname/raw/master/"
+'#########################################################################################################
 
 Sub directoryLookUp
 	logMSG("look up directory",1)
@@ -293,6 +313,8 @@ Sub versionUpdate
 	End if
 End Sub
 
+'#########################################################################################################
+
 Sub msgLogThread(x As Any Ptr)
 	do
 		msgLog.out
@@ -302,56 +324,170 @@ Sub msgLogThread(x As Any Ptr)
 End Sub
 
 'Var x = ThreadCreate(@msgLogThread)
+'#########################################################################################################
 
-addToIgnoreList(".bas")
-addToIgnoreList(".bi")
-addToIgnoreList(".txt")
-addToIgnoreList(".conf")
+Sub disable_play_button
+	Dim As buttonUDT Ptr tmp = Cast(buttonUDT Ptr,get_window_graphic("mainframe","play"))
+	If tmp = 0 Then Return
+	tmp->isGrey = 1
+	tmp->EnableMouseClick=0
+	tmp->AllowMouseOverEffect=0
+	tmp->wasChanged=1
+End Sub
+
+Sub enable_play_button
+	Dim As buttonUDT Ptr tmp = Cast(buttonUDT Ptr,get_window_graphic("mainframe","play"))
+	If tmp = 0 Then Return
+	tmp->isGrey = 0
+	tmp->EnableMouseClick=1
+	tmp->AllowMouseOverEffect=1
+	tmp->wasChanged=1
+End Sub
+
+Sub disable_update_button
+	Dim As buttonUDT Ptr tmp = Cast(buttonUDT Ptr,get_window_graphic("mainframe","update"))
+	If tmp = 0 Then Return
+	tmp->isGrey = 1
+	tmp->EnableMouseClick=0
+	tmp->AllowMouseOverEffect=0
+	tmp->wasChanged=1
+End Sub
+
+Sub enable_update_button
+	Dim As buttonUDT Ptr tmp = Cast(buttonUDT Ptr,get_window_graphic("mainframe","update"))
+	If tmp = 0 Then Return
+	tmp->isGrey = 0
+	tmp->EnableMouseClick=1
+	tmp->AllowMouseOverEffect=1
+	tmp->wasChanged=1
+End Sub
+
+Sub disable_repair_button
+	Dim As buttonUDT Ptr tmp = Cast(buttonUDT Ptr,get_window_graphic("mainframe","repair"))
+	If tmp = 0 Then Return
+	tmp->isGrey = 1
+	tmp->EnableMouseClick=0
+	tmp->AllowMouseOverEffect=0
+	tmp->wasChanged=1
+End Sub
+
+Sub enable_repair_button
+	Dim As buttonUDT Ptr tmp = Cast(buttonUDT Ptr,get_window_graphic("mainframe","repair"))
+	If tmp = 0 Then Return
+	tmp->isGrey = 0
+	tmp->EnableMouseClick=1
+	tmp->AllowMouseOverEffect=1
+	tmp->wasChanged=1
+End Sub
+
+Sub repairSub(x As Any Ptr)
+	disable_play_button
+	disable_update_button
+	
+	directoryLookUp
+	createCheckSum
+	
+	enable_play_button
+	enable_update_button
+End Sub
+
+Sub testasd(x As Any Ptr)
+	For i As Integer = 1 To 10000
+		If i Mod 100 = 0 Then logMSG("test"+Str(i))
+		Sleep 10,1
+	Next
+End Sub
+
+Sub repair
+
+	Var i = ThreadCreate(@testasd)
 
 
-Dim As String cmdinput
-do
+End Sub
 
-Input cmdinput
-  
-Select Case cmdinput
-	Case "lookUp"
-		directoryLookUp
-		msgLog.out
-		msgLog.clear
+Sub test_push
+	Dim As msgboxUDT Ptr tmp = Cast(buttonUDT Ptr,get_window_graphic("mainframe","log"))
+	If tmp = 0 Then Return
+	tmp->pushUp
+	tmp->wasChanged=1
+End Sub
+
+Sub test_pushd
+	Dim As msgboxUDT Ptr tmp = Cast(buttonUDT Ptr,get_window_graphic("mainframe","log"))
+	If tmp = 0 Then Return
+	tmp->pushDown
+	tmp->wasChanged=1
+End Sub
+
+Dim As variableUDT repairVar = "repair"
+repairVar.data = @repair
+repairVar.setPTR
+
+Dim As variableUDT beep1 = "disable_play_button"
+beep1.Data = @test_push
+beep1.setPTR
+
+Dim As variableUDT beep2 = "disable_play_button2"
+beep2.Data = @test_pushd
+beep2.setPTR
+
+Dim As variableUDT msglist = "msglist"
+msglist.data = @msgLog
+msglist.setList
+
+Dim As Double update_process_var = 0.5
+Dim As variableUDT update_process = "update_process"
+update_process.data = @update_process_var
+update_process.setPTR
+
+'#########################################################################################################
+Dim As String graphic_input_code 
+graphic_input_code += "<setAll<0/><0/><"+Str(windowx)+"/><"+Str(windowy)+"/><0/><0/><8/><8/>/>"
+graphic_input_code += "<window<<id_name<mainframe/>/><isfullscreen/>/>"
+graphic_input_code +=  "<"
+
+graphic_input_code +=  "<button<id_name<play/>/><height<50/>/><width<"+Str(windowx-16)+"/>/><moveable<0/>/><resizeable<0/>/><action<var<disable_play_button/>/>/><text<<text<test1/>/>/>/>/>"
+
+graphic_input_code +=  "<button<id_name<update/>/><height<50/>/><width<"+Str((windowx-24)/2)+"/>/><moveable<0/>/><resizeable<0/>/><action<var<disable_play_button2/>/>/><text<<text<test2/>/>/>/>/>"
+graphic_input_code +=  "<r/>"
+graphic_input_code +=  "<button<id_name<repair/>/><height<50/>/><width<"+Str((windowx-24)/2)+"/>/><moveable<0/>/><resizeable<0/>/><action<var<repair/>/>/><text<<text<test2/>/>/>/>/>"
+
+graphic_input_code +=  "<progressbar<height<25/>/><width<"+Str(windowx-16)+"/>/><process<var<update_process/>/>/><moveable<0/>/><resizeable<0/>/><text<<text<test1/>/>/>/>/>"
+
+graphic_input_code +=  "<msgbox<id_name<log/>/><height<100/>/><width<"+Str(windowx-36)+"/>/><list<var<msglist/>/>/><moveable<0/>/><resizeable<0/>/><text<<text<test1/>/>/>/>/>"
+
+
+
+graphic_input_code +="/>"
+graphic_input_code +="/>"
+
+
+
+Dim As list_type Ptr graphicList
+graphicList = New list_type
+graphicList = parseCommand(graphic_input_code)
+interpreter(graphicList)
+graphicList->Clear
+Delete graphicList
+
+'#########################################################################################################
+cls
+GLOBAL_INTERPRET_LOG.out
+Sleep
+Sub gui
+
+	Dim As Double zeit
+	Do
+		zeit = timer
+		ScreenLock
+		Cls
+		GUI_UPDATE
 		
-	Case "checksum"
-		createCheckSum
-		msgLog.out
-		msgLog.clear
-	Case "load"
-		loadVersion("version.txt",1)
-		msgLog.out
-		msgLog.clear
-	Case "save"
-		saveVersion("version.txt")
-		msgLog.out
-		msgLog.clear
-	Case "check"
-		check4differences
-		msgLog.out
-		msgLog.clear
-	Case "update"
-		versionUpdate
-		msgLog.out
-		msgLog.clear
-End Select
+		ScreenUnLock
+		Do
+			Sleep 1,1
+		Loop While (Timer-zeit) < (1/60)
+	Loop
+End Sub
 
-Loop Until cmdinput = "exit"
-
-'createCheckSum
-'loadVersion("version.txt",1)
-'check4differences
-''fullFileList_difference->out
-'versionUpdate
-
-'
-'fullFileLoadList.out
-
-
-sleep
+gui

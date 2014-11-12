@@ -13,7 +13,10 @@ Function setBasicGraphicStats(obj As graphicUDT Ptr,list As list_type ptr) as gr
 	Dim As Integer tmp_obj_width
 	Dim As Integer tmp_obj_height
 	Dim As Integer tmp_obj_polling
+	Dim As Integer tmp_obj_isResizeable = -1
+	Dim As Integer tmp_obj_isMoveable = -1
 	Dim As String tmp_obj_background
+	Dim As String tmp_obj_id_name
 	
 	If obj=0 Then Return 0
 	If list = 0 Then Return 0
@@ -78,6 +81,33 @@ Function setBasicGraphicStats(obj As graphicUDT Ptr,list As list_type ptr) as gr
 					If tmp2->IsNumber=0 Then Return 0
 					tmp_obj_polling = Val(tmp2->text)
 				EndIf
+				If LCase(tmp2->text) = "resizeable" Then
+					tmp2 = Cast(SubString Ptr,tmp->list->getItem)
+					If tmp2=0 Then
+						logInterpret("no attribute for 'resizeable'",1)
+						Return 0
+					EndIf
+					If tmp2->IsNumber=0 Then Return 0
+					tmp_obj_isresizeable = Val(tmp2->text)
+				EndIf
+				If LCase(tmp2->text) = "moveable" Then
+					tmp2 = Cast(SubString Ptr,tmp->list->getItem)
+					If tmp2=0 Then
+						logInterpret("no attribute for 'moveable'",1)
+						Return 0
+					EndIf
+					If tmp2->IsNumber=0 Then Return 0
+					tmp_obj_ismoveable = Val(tmp2->text)
+				EndIf
+				If LCase(tmp2->text) = "id_name" Then
+					tmp2 = Cast(SubString Ptr,tmp->list->getItem)
+					If tmp2=0 Then
+						logInterpret("no attribute for 'id_name'",1)
+						Return 0
+					EndIf
+					tmp_obj_id_name = tmp2->text
+				EndIf
+				
 			EndIf
 		End if
 	Loop Until tmp = 0
@@ -97,6 +127,16 @@ Function setBasicGraphicStats(obj As graphicUDT Ptr,list As list_type ptr) as gr
 	'obj->Width_ = tmp_obj_width
 	'obj->height = tmp_obj_height
 	obj->resize(tmp_obj_width,tmp_obj_height)
+	obj->id_name = tmp_obj_id_name
+	If tmp_obj_isResizeable <> -1 Then
+		obj->isresizeable = tmp_obj_isresizeable	
+	EndIf
+	
+	If tmp_obj_ismoveable <> -1 Then
+		obj->isMoveable = tmp_obj_ismoveable	
+	EndIf
+
+	
 	if tmp_obj_polling <> 0 then
 		obj->enablePolling = 1
 		obj->polling = tmp_obj_polling / 1000 

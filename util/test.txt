@@ -12,27 +12,6 @@
 />
 
 
-<imgload
-	<id_name
-		<
-			testBild
-		/>
-	/>
-
-	<file
-		<gui/bild.bmp/>
-	/> 
-	
-	<width
-		<200/>
-	/>
-	<height
-		<200/>
-	/>
-
-
-/>
-
 <window
 	<
 		<id_name<firstWindow/>/>

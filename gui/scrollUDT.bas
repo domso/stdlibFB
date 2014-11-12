@@ -30,16 +30,18 @@ End Constructor
 
 
 Sub scrollUDT.paint
-	Line buffer(1),(0,0)-(Width_-1,height-1),RGBa(red,green,blue,255),bf
+	Line buffer(1),(0,0)-(Width_-1,height-1),RGBa(red/3,green/3,blue/3,255),bf
 	Line buffer(1),(1,1)-(Width_-1,height-1),RGB(143,76,25),b
 	Line buffer(1),(3,3)-(Width_-1-2,height-1-2),RGB(0,0,0),b
 	Line buffer(1),(2,2)-(Width_-1-1,height-1-1),RGB(0,0,0),b
 	
-	Line buffer(2),(0,0)-(Width_-1,height-1),RGBa(200,green,blue,200),bf
+	Line buffer(2),(0,0)-(Width_-1,height-1),RGBa(red/3,green/3,blue/3,200),bf
 	Line buffer(2),(1,1)-(Width_-1,height-1),RGB(143,76,25),b
 	Line buffer(2),(3,3)-(Width_-1-2,height-1-2),RGB(0,0,0),b
 	Line buffer(2),(2,2)-(Width_-1-1,height-1-1),RGB(0,0,0),b
 	
+	'line buffer(1),(Width_*process-1,4)-(width_-4,height-4),rgba(red/3,green/3,blue/3,100),bf
+	'line buffer(2),(Width_*process-1,4)-(width_-4,height-4),rgba(red/3,green/3,blue/3,100),bf
 	
 	If background<>0 Then Put buffer(1),(0,0),background->buffer,alpha
 	If background<>0 Then Put buffer(2),(0,0),background->buffer,Alpha
@@ -51,10 +53,13 @@ Function scrollUDT.todo As Byte
 
 
 	
-	If ((height/(itemHeight*maxStatus)))<1  Then
-		button->resize(Width_, height * ((height/(itemHeight*maxStatus))))
+	If ((height/(maxStatus)))<1  Then
+		If height * ((height/(maxStatus)))>1 then
+			button->resize(Width_, height * ((height/(maxStatus))))
+		End if
 	Else
 		button->resize(Width_, height )
+		
 	End if
 	button->position.x=position.x
 	button->position.y=(status*(height-button->height))/((MaxStatus-(height/itemHeight))) + position.y
@@ -75,10 +80,14 @@ Function scrollUDT.todo As Byte
 		wasChanged=1
 		Islock=0
 		button->position.y=my-buttonDiffY
-		If (my-buttonDiffY)<position.y Then button->position.y=position.y
+		If (my-buttonDiffY)<=position.y Then button->position.y=position.y
+		
 		If button->position.y+button->height>position.y+height Then button->position.y = position.y+height-button->height : isLock=1
 		status = ((MaxStatus-(height/itemHeight))) * ((button->position.y-position.y) / (height-button->height))
 	EndIf
+	
+	
+	
 	
 	
 	If isLock=1 Then
@@ -92,16 +101,19 @@ End Function
 
 Sub scrollUDT.setStatus(Status As Integer)
 	IsLock=0
-	If status<0 Or status>(maxstatus)-height/itemHeight Then Return
+	If status<0 Then Return
+	
+	If ((status*(height-button->height))/((MaxStatus-(height/itemHeight))) + position.y)+button->height>position.y+height Then
+		button->position.y = position.y+height-button->height 
+		isLock=1
+		status = ((MaxStatus-(height/itemHeight))) * ((button->position.y-position.y) / (height-button->height))
+		wasChanged=1
+		return
+	EndIf
 	
 	this.status=status
-
-	
-	button->position.y = (status*(height-button->height))/((MaxStatus-(height/itemHeight))) + position.y
-	
+	button->position.y = (status*(height-button->height))\((MaxStatus-(height/itemHeight))) + position.y
 	If button->position.y+button->height>position.y+height Then button->position.y = position.y+height-button->height : isLock=1
-
-	
 	
 End Sub
 

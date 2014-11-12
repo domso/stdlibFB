@@ -72,7 +72,7 @@ test =  file2String("util/test.txt")
 
 'Print test
 Dim As list_type Ptr tmp
-tmp = New list_type
+'tmp = New list_type
 tmp = parseCommand(test)
 
 

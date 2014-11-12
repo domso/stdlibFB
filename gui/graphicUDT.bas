@@ -18,8 +18,10 @@ tmpGraphicIMG = New imgUDT("DEFAULT_WINDOW_BACKGROUND","gui/bild.bmp",900,506)
 '	BLoad "bild.bmp",pergament
 
 'Dim Shared As list_Type graphicList
+
+
 Type graphicUDT extends utilUDT
-	As String text,description 
+	As String text,id_name 
 	As Any Ptr buffer(1 To 2)
 	
 	As imgUDT Ptr background

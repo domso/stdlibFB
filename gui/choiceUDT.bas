@@ -146,6 +146,7 @@ Function choiceUDT.todo As Byte
 			Dim As Integer r=mouseWheel(1)
 			If r<>0 Then
 				scroll->setStatus(scroll->status+r*height)
+				wasChanged=1
 			End If				
 		EndIf
 		

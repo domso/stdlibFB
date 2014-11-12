@@ -38,6 +38,26 @@ Function get_window(id_name As String) As windowUDT Ptr
 	Return tmp2
 End Function
 
+Function get_window_graphic(window_id_name As String,graphic_id_name As String) As graphicUDT Ptr
+	Var tmp = get_window(window_id_name)
+	If tmp = 0 Then Return 0
+	If graphic_id_name="" Then Return 0
+	
+	Var tmps = tmp->graphicList.set
+	
+	tmp->graphicList.reset
+	Dim As graphicUDT Ptr tmpG 
+	Do
+		tmpG = Cast(graphicUDT Ptr,tmp->graphicList.getItem)
+		If tmpG <> 0 Then
+			If tmpG->id_name = graphic_id_name Then
+				tmp->graphicList.set = tmps
+				Return tmpG
+			EndIf
+		EndIf
+	Loop Until tmpG = 0
+	tmp->graphicList.set = tmps
+End Function
 
 Sub windowUDT.AddGraphic(item As graphicUDT ptr)
 	If isFullScreen=0 then
