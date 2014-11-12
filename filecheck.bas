@@ -1,6 +1,6 @@
 Dim Shared As Integer windowx,windowy
 windowx = 400
-windowy = 400
+windowy = 280
 ScreenRes windowx,windowy,32
 
 #Include Once "util/util.bas"
@@ -15,12 +15,11 @@ Dim Shared As list_type Ptr fullFileList_update
 Dim Shared As list_type Ptr fullFileList_difference
 Dim Shared As list_type ptr fullFileLoadList
 Dim Shared As directoryTreeUDT Ptr directoryTree
-
+Dim Shared As Double update_process_var
 
 Dim Shared As String main_path,download_path
 main_path = "."
 download_path = "https://github.com/domso/noname/raw/master/"
-
 
 GUI_SET(windowx,windowy,125,125,125)
 
@@ -135,13 +134,18 @@ Sub createCheckSum
 	EndIf
 	Dim As fileUDT Ptr tmp
 	fullFileList->Reset
+	update_process_var=0.00
+	Dim As Integer i
 	Do
 		tmp = Cast(fileUDT Ptr,fullFileList->getItem)
 		If tmp <> 0 Then
 			tmp->createCheckSum
 			logMSG("checksum for "+tmp->file_name +" created!" )
+			i+=1
+			update_process_var+=(1/fullFileList->itemcount)
 		EndIf
 	Loop Until tmp = 0
+	update_process_var=1
 	logMSG("finish creating checksums",2)
 End Sub
 
@@ -276,12 +280,15 @@ Sub versionUpdate
 			If download(download_path + tmp->path + tmp->file_name,tmp->path + tmp->file_name)=1 Then
 				logMSG("download finished") 
 				
+				fullFileList->Add(tmp,1)
+				saveVersion("version.txt")
+				
 				If tmp2<>0 Then
 					If tmp2->file_name = tmp->file_name Then
 						logMSG("delete old file: "+"old_"+tmp2->file_name)
 						deleteFile(tmp2->path+"old_"+tmp2->file_name)  
 						fullFileList->remove(tmp2)
-						fullFileList->Add(tmp,1)
+						
 					EndIf
 				EndIf
 			Else
@@ -315,13 +322,9 @@ End Sub
 
 '#########################################################################################################
 
-Sub msgLogThread(x As Any Ptr)
-	do
-		msgLog.out
-		msgLog.clear
-		Sleep 100,1
-	loop
-End Sub
+Var NewGraphicIMG = New imgUDT("NEW_GRAPHIC_BACKGROUND","",800,600)
+Line NewGraphicIMG->buffer,(0,0)-(800,600),RGB(0,125,125),bf
+
 
 'Var x = ThreadCreate(@msgLogThread)
 '#########################################################################################################
@@ -409,7 +412,9 @@ Sub updateSub(x As Any Ptr)
 	download(download_path+"version.txt","./version_neu.txt")
 	loadVersion("version.txt")
 	loadVersion("version_neu.txt",1)
+	deleteFile("version_neu.txt")
 	check4differences
+	versionUpdate
 	
 	enable_play_button
 	enable_repair_button
@@ -455,7 +460,7 @@ Dim As variableUDT msglist = "msglist"
 msglist.data = @msgLog
 msglist.setList
 
-Dim As Double update_process_var = 0.5
+
 Dim As variableUDT update_process = "update_process"
 update_process.data = @update_process_var
 update_process.setPTR
@@ -466,7 +471,7 @@ graphic_input_code += "<setAll<0/><0/><"+Str(windowx)+"/><"+Str(windowy)+"/><0/>
 graphic_input_code += "<window<<id_name<mainframe/>/><isfullscreen/>/>"
 graphic_input_code +=  "<"
 
-graphic_input_code +=  "<button<id_name<play/>/><height<50/>/><width<"+Str(windowx-16)+"/>/><moveable<0/>/><resizeable<0/>/><action<var<disable_play_button/>/>/><text<<text<test1/>/>/>/>/>"
+graphic_input_code +=  "<button<id_name<play/>/><background<NEW_GRAPHIC_BACKGROUND/>/><height<50/>/><width<"+Str(windowx-16)+"/>/><moveable<0/>/><resizeable<0/>/><action<var<disable_play_button/>/>/><text<<text<test1/>/>/>/>/>"
 
 graphic_input_code +=  "<button<id_name<update/>/><height<50/>/><width<"+Str((windowx-24)/2)+"/>/><moveable<0/>/><resizeable<0/>/><action<var<update/>/>/><text<<text<test2/>/>/>/>/>"
 graphic_input_code +=  "<r/>"
@@ -491,9 +496,7 @@ graphicList->Clear
 Delete graphicList
 
 '#########################################################################################################
-cls
-GLOBAL_INTERPRET_LOG.out
-Sleep
+
 Sub gui
 
 	Dim As Double zeit

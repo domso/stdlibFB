@@ -60,7 +60,7 @@ End Sub
 Function progressBarUDT.todo As Byte
 	If enable=0 Then Return 0
 	if updater <> 0 then
-		process = *updater
+		process = *updater		
 	end if
 	if old_value <> process then
 		old_value = process
