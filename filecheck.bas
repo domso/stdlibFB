@@ -35,9 +35,9 @@ addToIgnoreList(".conf")
 
 
 '#########################################################################################################
-#If __FB_WIN32__ Then
-	executeable_file +=".exe
-	patcher_file     +=".exe
+#If Defined(__FB_WIN32__)
+	executeable_file +=".exe"
+	patcher_file     +=".exe"
 #endif
 
 If FileExists("old_"+patcher_file) Then
@@ -487,6 +487,8 @@ Sub versionUpdate
 				If tmp2<>0 Then
 					If tmp2->file_name = tmp->file_name Then
 						logMSG("delete old file: "+"old_"+tmp2->file_name)
+						logMSG(patcher_file)
+						logMSG(tmp2->file_name)
 						If patcher_file = tmp2->file_name Then
 							Run patcher_file
 							FreeAll
@@ -713,6 +715,7 @@ Delete graphicList
 
 '#########################################################################################################
 disable_play_button
+
 Sub gui
 
 	Dim As Double zeit
