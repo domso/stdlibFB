@@ -24,7 +24,7 @@ Dim Shared As String main_path,download_path,version_file,executeable_file,patch
 main_path = "."
 download_path = "https://github.com/domso/noname/raw/master/"
 version_file = "version.txt"
-executeable_file = "test.exe"
+executeable_file = "test"
 patcher_file = "filecheck"
 GUI_SET(windowx,windowy,125,125,125)
 
@@ -35,6 +35,19 @@ addToIgnoreList(".conf")
 
 
 '#########################################################################################################
+#If __FB_WIN32__ Then
+	executeable_file +=".exe
+	patcher_file     +=".exe
+#endif
+
+If FileExists("old_"+patcher_file) Then
+	Kill("old_"+patcher_file)
+EndIf
+
+
+'#########################################################################################################
+
+
 
  Dim Shared As list_type MSGlog
 Type MSGlogUDT extends utilUDT
@@ -263,6 +276,17 @@ Sub saveVersion(file As String)
 	Dim As directoryTreeUDT Ptr tmpD	
 	Dim As crc32_hash Ptr tmphash	
 	Open file For output As #f	
+	
+		fullDirectoryList->resetB	
+		Do
+			tmpD = Cast(directoryTreeUDT Ptr,fullDirectoryList->getitem(1))
+			If tmpD<>0 Then
+				put #f,, "<dir<"+tmpD->directory_name+"/><"+tmpD->path+"/>"
+				put #f,, "/>"
+				Put #f,, Chr(13)+Chr(10) 'new line
+			EndIf
+		Loop Until tmpD = 0	
+	
 		fullFileList->reset		
 		Do
 			tmp = Cast(fileUDT Ptr,fullFileList->getitem)
@@ -283,15 +307,7 @@ Sub saveVersion(file As String)
 				Put #f,, Chr(13)+Chr(10) 'new line
 			EndIf
 		Loop Until tmp = 0
-		fullDirectoryList->reset		
-		Do
-			tmpD = Cast(directoryTreeUDT Ptr,fullDirectoryList->getitem)
-			If tmpD<>0 Then
-				put #f,, "<dir<"+tmpD->directory_name+"/><"+tmpD->path+"/>"
-				put #f,, "/>"
-				Put #f,, Chr(13)+Chr(10) 'new line
-			EndIf
-		Loop Until tmpD = 0	
+		
 	Close #f
 	logMSG("finish saving",2)
 End Sub
@@ -364,23 +380,83 @@ Sub check4differences
 		EndIf
 	Loop Until tmp = 0
 	set_update_process(1.0)
-
+'#########################################################
+	If fulldirectoryList = 0 Then 
+		logMSG("missing current version",-1)
+		return
+	EndIf
+	If fulldirectoryList_update = 0 Then 
+		logMSG("missing new version",-1)
+		return
+	EndIf
+	If fulldirectoryList_difference <> 0 Then
+		logMSG("delete old differences",-2)
+		Delete fulldirectoryList_difference
+	EndIf
+	fulldirectoryList_difference = New list_type
+	
+	i = fulldirectoryList_update->itemcount
+	set_update_process(0.0)
+	fulldirectoryList_update->Reset
+	fulldirectoryList->reset
+	Dim As directoryTreeUDT Ptr tmpD
+	Do
+		tmpD = Cast(directoryTreeUDT Ptr,fulldirectoryList_update->getItem)
+		If tmpD <> 0 Then
+			If fulldirectoryList->search(tmpD) = 0 Then
+				fulldirectoryList_difference->Add(tmpD,1)
+				logMSG("found differences in: "+tmpD->directory_name)
+			EndIf
+			add_update_process(1/fulldirectoryList_update->itemcount)
+			
+		EndIf
+		If get_action_exit_flag Then
+			logMSG("ABORT!",-2)
+			Exit sub
+		EndIf
+	Loop Until tmpD = 0
+	set_update_process(1.0)
 	
 	logMSG("finish checking",2)
 End Sub
 
 Sub versionUpdate
 	logMSG("update version",1)
-	If fullFileList_difference = 0 Then
+	If fullFileList_difference = 0 Or fulldirectoryList_difference = 0 Then
 		logMSG("no differences found (check4differences ?)",-1) 
 		Return
 	EndIf
 	
-	fullFileList_difference->reset
 	Dim As Byte completePatch=1
 	Dim As fileUDT Ptr tmp
 	Dim As fileUDT Ptr tmp2
-	Dim As Integer i = fullFileList_difference->itemcount
+	Dim As directoryTreeUDT Ptr tmpD
+	fulldirectoryList_difference->Reset
+	set_update_process(0)
+	
+	Do
+		tmpD = Cast(directoryTreeUDT Ptr,fulldirectoryList_difference->getItem)
+		If tmpD <> 0 Then
+			
+			If MkDir(tmpD->directory_path) Then
+				logMSG("Could not create directory: "+tmpD->directory_path)
+				completePatch = 0
+			Else
+				logMSG("Create directory: "+tmpD->directory_path)
+			EndIf
+			add_update_process(1/fulldirectoryList_difference->itemcount)		
+		EndIf
+	Loop Until tmpD = 0
+	
+	set_update_process(1)
+	
+	If fullDirectoryList_update <> 0 Then
+		fullDirectoryList_update->Clear(1)
+	EndIf
+	
+	
+	fullFileList_difference->reset
+
 	set_update_process(0.0)
 	
 	Do
@@ -411,7 +487,12 @@ Sub versionUpdate
 				If tmp2<>0 Then
 					If tmp2->file_name = tmp->file_name Then
 						logMSG("delete old file: "+"old_"+tmp2->file_name)
-						deleteFile(tmp2->path+"old_"+tmp2->file_name)  
+						If patcher_file = tmp2->file_name Then
+							Run patcher_file
+							FreeAll
+						else
+							deleteFile(tmp2->path+"old_"+tmp2->file_name)
+						EndIf  
 						fullFileList->remove(tmp2)
 						
 					EndIf
@@ -441,12 +522,12 @@ Sub versionUpdate
 		fullFileList_update->Clear(1)
 	EndIf
 	
-	
 	If completePatch then
 		logMSG("finish updating",2)
 		isValid = 1
 	Else
 		logMSG("finish updating, but could not download all files",-1)
+		isValid = 0
 	End if
 End Sub
 
@@ -540,12 +621,6 @@ Sub repair
 End Sub
 
 Sub updateSub(x As Any Ptr)
-set_action_exit_flag(0)
-		directoryLookUp
-		loadVersion("version.txt",1)
-		check4differences
-		set_action_exit_flag(1)
-return
 
 	set_action_exit_flag(0)
 	disable_play_button
@@ -553,16 +628,15 @@ return
 	
 	'directoryLookUp
 	'createCheckSum
-	if download(download_path+"version.txt","./version_neu.txt") = 0 then
+	If download(download_path+"version.txt","./version_neu.txt") = 0 then
 		logMSG("could not download version file",-1)
-	else
-		directoryLookUp
-		loadVersion("version.txt",1)
-		'loadVersion("version_neu.txt",1)
-		'deleteFile("version_neu.txt")
+	Else
+		loadVersion("version.txt")
+		loadVersion("version_neu.txt",1)
+		deleteFile("version_neu.txt")
 		check4differences
-		'versionUpdate
-	end if
+		versionUpdate
+	End if
 	enable_play_button
 	enable_repair_button
 	set_action_exit_flag(1)
@@ -579,7 +653,10 @@ Sub update
 End Sub
 
 Sub play
-	startprogram(executeable_file)
+	'startprogram(executeable_file)
+	If Run(executeable_file) = -1 Then
+		logMSG("could not execute client! Please repair version!",-1)
+	EndIf
 End Sub
 
 Dim As variableUDT repairVar = "repair"
