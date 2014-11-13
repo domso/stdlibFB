@@ -133,7 +133,7 @@ Sub graphicUDT.painttext
 	if noTextParse then
 		draw String buffer(1),(Width_/2-Len(text)*4,height/2-4),text,RGB(255,255,255)
 		draw String buffer(2),(Width_/2-Len(text)*4,height/2-4),text,RGB(255,255,255)
-	end if
+	else
 	
 		Dim As GLOBAL_CURSOR_UDT Ptr GLOBAL_CURSOR_tmp = New GLOBAL_CURSOR_UDT
 		GLOBAL_CURSOR_tmp->x = GLOBAL_CURSOR.x
@@ -181,7 +181,7 @@ Sub graphicUDT.painttext
 		GLOBAL_CURSOR.min_y = GLOBAL_CURSOR_tmp->min_y
 		GLOBAL_CURSOR.max_x = GLOBAL_CURSOR_tmp->max_x
 		GLOBAL_CURSOR.max_y = GLOBAL_CURSOR_tmp->max_y
-		
+	end if		
 
 End Sub
 Sub graphicUDT.paint

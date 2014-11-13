@@ -25,6 +25,7 @@ Type panelUDT  extends utilUDT
 	Declare virtual Sub EnableInactiv(status As Byte)
 	Declare virtual Function todo As Byte
 	Declare Constructor (position As pointUDT Ptr=0,Width_ As Integer=0,height As Integer=0)
+	Declare Destructor
 	Declare virtual Function equals(o As utilUDT Ptr) As Integer
 	
 End Type
@@ -38,6 +39,10 @@ Constructor panelUDT(position As pointUDT Ptr=0,Width_ As Integer=0,height As In
 		this.position.y=position->y		
 	EndIf
 End Constructor
+
+Destructor panelUDT
+	graphicList.clear
+End Destructor
 
 Function panelUDT.equals(o As utilUDT Ptr) As Integer
 	If o=0 Then Return 0

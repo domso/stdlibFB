@@ -129,6 +129,7 @@ Var test9c=New windowUDT("asd2","###3###",New pointUDT(200,400),100,100)
 	
 test2=New textfieldUDT(New pointUDT(0,0),100,20)
 test9c->AddGraphic(test2)
+test2->noTextParse = 1
 test2=0
 
 test2=New textfieldUDT(New pointUDT(0,30),100,20)
@@ -137,7 +138,7 @@ test2->EnableSecretInput=1
 test9c->AddGraphic(test2)
 '
 test2=New textfieldUDT(New pointUDT(0,60),100,20)
-	test2->Editable=0
+	'test2->Editable=0
 test9c->AddGraphic(test2)
 
 test9a->AddGraphic(test6)

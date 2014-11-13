@@ -39,7 +39,7 @@ Function GLOBAL_msgbox_load_UDT.action(list As list_type Ptr,parent As Any Ptr=0
 						Return 0
 					EndIf
 					logInterpret(tmp3->text,2)
-					tmpList = Valint(tmp3->text)
+					tmpList = cast(any ptr,Valint(tmp3->text))
 				EndIf
 
 			End if

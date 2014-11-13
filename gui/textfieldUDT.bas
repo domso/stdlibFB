@@ -15,6 +15,7 @@ End Type
 
 Constructor textfieldUDT(position As pointUDT Ptr=0,Width_ As Integer=0,height As Integer=0)
 	base(position,width_,height)
+	noTextParse = 1
 	Paint
 	GLOBAL_GUI_TEXTFIELD_LIST.add(@This)
 End Constructor
@@ -86,12 +87,12 @@ Function textfieldUDT.todo As Byte
 				End If
 			Loop Until tmp=0
 			status=1
-			DO : LOOP WHILE LEN(INKEY)
+			DO : LOOP WHILE LEN(getInkey)
 		EndIf
 	EndIf
 	If status=1 Then
 		wasChanged=1
-		Dim As String key=InKey
+		Dim As String key=getInkey
 		
 		If key<>"" Then 
 			

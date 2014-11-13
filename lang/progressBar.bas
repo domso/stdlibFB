@@ -37,7 +37,7 @@ Function GLOBAL_progressBar_load_UDT.action(list As list_type Ptr,parent As Any 
 						logInterpret("no attribute for 'process'",1)
 						Return 0
 					EndIf
-					tmpString = Valint(tmp3->text)
+					tmpString = cast(any ptr,Valint(tmp3->text))
 				EndIf
 			End if
 			

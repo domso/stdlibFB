@@ -38,7 +38,7 @@ Function GLOBAL_checkbox_load_UDT.action(list As list_type Ptr,parent As Any Ptr
 						logInterpret("no attribute for 'activ'",1)
 						Return 0
 					EndIf
-					tmpactiv = Valint(tmp3->text)
+					tmpactiv = cast(any ptr,Valint(tmp3->text))
 				EndIf				
 				If LCase(tmp3->text) = "inactiv" Then
 					tmp3 = Cast(SubString Ptr,tmp2->list->getItem)
@@ -46,7 +46,7 @@ Function GLOBAL_checkbox_load_UDT.action(list As list_type Ptr,parent As Any Ptr
 						logInterpret("no attribute for 'inactiv'",1)
 						Return 0
 					EndIf
-					tmpinactiv = Valint(tmp3->text)
+					tmpinactiv = cast(any ptr,Valint(tmp3->text))
 				EndIf
 
 			End if

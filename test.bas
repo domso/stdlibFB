@@ -41,9 +41,8 @@ testvar2.setString
 
 
 Dim As variableUDT testvar21 = "blub2"
-Dim As String testString2 = "<var<blub/>/>"
-testvar21.data = @testString2
-testvar21.setString
+testvar21.data = @testString
+testvar21.setPTR
 
 Dim As variableUDT testvarString = "tmpString"
 Dim As String testString3 = "abc2"

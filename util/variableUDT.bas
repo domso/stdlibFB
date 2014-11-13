@@ -11,6 +11,7 @@ Type variableUDT extends utilUDT
 		As any Ptr Data
 		
 		Declare Constructor(title As String,noList As UByte=0)
+		Declare Destructor
 		Declare virtual Function toValString As String
 		Declare virtual Function toString As String
 		Declare virtual Function equals(o As utilUDT Ptr) As Integer
@@ -58,6 +59,12 @@ Constructor variableUDT(title As String,noList As UByte=0)
 		GLOBAL_VARIABLE_LIST.add(@This,1)
 	End if
 End Constructor
+
+Destructor variableUDT
+	if isUtilUDT then
+		delete cast(utilUDT ptr,this.data)
+	end if
+end Destructor
 
 Function variableUDT.toValString As String
 	If Data = 0 Then Return "#ndef"

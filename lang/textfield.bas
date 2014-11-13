@@ -37,7 +37,7 @@ Function GLOBAL_textfield_load_UDT.action(list As list_type Ptr,parent As Any Pt
 						logInterpret("no attribute for 'string'",1)
 						Return 0
 					EndIf
-					tmpString = Valint(tmp3->text)
+					tmpString = cast(any ptr,Valint(tmp3->text))
 				EndIf
 			End if
 			
@@ -48,7 +48,6 @@ Function GLOBAL_textfield_load_UDT.action(list As list_type Ptr,parent As Any Pt
 
 	tmp->text = tmpString
 
-	
 	
 	If tmp->position.x = -1 Or tmp->position.y = -1 Then ' x,y not set!
 		GLOBAL_CURSOR.setModul(tmp->Width_,tmp->height)

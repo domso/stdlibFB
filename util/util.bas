@@ -10,4 +10,6 @@
 #Include Once "imgUDT.bas"
 #Include Once "variableUDT.bas"
 #Include Once "directoryTreeUDT.bas"
+#Include Once "deleteUDT.bas"
+#Include Once "inkey.bas"
 

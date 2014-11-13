@@ -34,7 +34,7 @@ Function GLOBAL_button_load_UDT.action(list As list_type Ptr,parent As Any Ptr=0
 						logInterpret("no attribute for 'action'",1)
 						Return 0
 					EndIf
-					tmpAction = Valint(tmp3->text)
+					tmpAction = cast(any ptr,Valint(tmp3->text))
 				EndIf
 				If LCase(tmp3->text) = "text" Then
 					tmp3 = Cast(SubString Ptr,tmp2->list->getItem)

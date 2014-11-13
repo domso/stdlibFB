@@ -124,6 +124,7 @@ If GLOBAL_EVENT_MOUSEOVER=1 Then
 		EndIf
 	EndIf
 
+updateInkey
 
 End Sub
 

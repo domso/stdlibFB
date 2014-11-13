@@ -12,16 +12,20 @@ ScreenRes windowx,windowy,32
 Dim Shared As list_type Ptr fullDirectoryList
 Dim Shared As list_type Ptr fullFileList
 Dim Shared As list_type Ptr fullFileList_update
+Dim Shared As list_type Ptr fullDirectoryList_update
 Dim Shared As list_type Ptr fullFileList_difference
+Dim Shared As list_type Ptr fulldirectoryList_difference
 Dim Shared As list_type ptr fullFileLoadList
+Dim Shared As list_type ptr fullDirectoryLoadList
 Dim Shared As directoryTreeUDT Ptr directoryTree
 Dim Shared As UByte isValid
 
-Dim Shared As String main_path,download_path,version_file,executeable_file
+Dim Shared As String main_path,download_path,version_file,executeable_file,patcher_file
 main_path = "."
 download_path = "https://github.com/domso/noname/raw/master/"
 version_file = "version.txt"
 executeable_file = "test.exe"
+patcher_file = "filecheck"
 GUI_SET(windowx,windowy,125,125,125)
 
 addToIgnoreList(".bas")
@@ -55,6 +59,12 @@ End Function
 Sub logMSG(msg As String,msg_type As Byte=0)
 	MSGlog.add(New MSGlogUDT(msg,msg_type),1)
 End Sub
+
+SUb MSGlog_destroy
+	MSGlog.clear
+end SUb
+
+add_destructor(@MSGlog_destroy)
 
 '#########################################################################################################
 
@@ -98,11 +108,50 @@ Function GLOBAL_FILE_LOAD_UDT.action(list As list_type Ptr,parent As Any Ptr=0) 
 	Return 1
 End Function
 
+Type GLOBAL_DIR_LOAD_UDT extends commandUDT
+	Declare Constructor
+	Declare virtual Function action(list As list_type Ptr,parent As Any Ptr=0) As UByte
+End Type
+
+Constructor GLOBAL_DIR_LOAD_UDT
+	base("dir")
+End Constructor
+
+Function GLOBAL_DIR_LOAD_UDT.action(list As list_type Ptr,parent As Any Ptr=0) As UByte
+	Dim As utilUDT Ptr tmp
+	Dim As SubString Ptr tmp2
+	
+	Dim As String tmp_directory_name
+	Dim As String tmp_directory_path
+	Dim As list_type Ptr tmp_hash_list
+	If fullFileLoadList = 0 Then Return 0
+	If list = 0 Then Return 0
+	list->Reset
+	tmp2 = Cast(SubString ptr,list->getItem)
+	If tmp2->text<>this.CommandString Then Return 0
+	tmp2 = Cast(SubString ptr,list->getItem)
+	If tmp2=0 Then Return 0
+	tmp_directory_name = tmp2->text
+	tmp2 = Cast(SubString ptr,list->getItem)
+	If tmp2=0 Then Return 0
+	tmp_directory_path = tmp2->text
+	
+	Var F = New directoryTreeUDT(tmp_directory_path,tmp_directory_name)
+	fullDirectoryLoadList->add(f,1)
+	Return 1
+End function
+
 Dim As GLOBAL_FILE_LOAD_UDT Ptr GLOBAL_FILE_LOAD = New GLOBAL_FILE_LOAD_UDT
 
 '#########################################################################################################
 Dim shared As Any Ptr action_exit_flag_mutex
 action_exit_flag_mutex = mutexCreate
+Sub action_exit_flag_mutex_destroy
+	mutexdestroy action_exit_flag_mutex
+end sub
+
+add_destructor(@action_exit_flag_mutex_destroy)
+
 Dim Shared As UByte action_exit_flag = 1
 
 Function get_action_exit_flag As UByte
@@ -154,11 +203,13 @@ Sub directoryLookUp
 	logMSG("update directory tree")
 	directoryTree->updateTree
 	logMSG("get all directories")
+	
 	If fullDirectoryList <> 0 Then
 		logMSG("delete old directory List",-2)
 		Delete fullDirectoryList
 	EndIf
 	fullDirectoryList = directoryTree->getAllDirectories
+	
 	logMSG("get all files")
 	If fullFileList <> 0 Then
 		logMSG("delete old file list",-2)
@@ -209,6 +260,7 @@ Sub saveVersion(file As String)
 	
 	Dim As Integer f = FreeFile
 	Dim As fileUDT Ptr tmp	
+	Dim As directoryTreeUDT Ptr tmpD	
 	Dim As crc32_hash Ptr tmphash	
 	Open file For output As #f	
 		fullFileList->reset		
@@ -227,6 +279,15 @@ Sub saveVersion(file As String)
 						EndIf
 					Loop Until tmpHash = 0
 				End if
+				put #f,, "/>"
+				Put #f,, Chr(13)+Chr(10) 'new line
+			EndIf
+		Loop Until tmp = 0
+		fullDirectoryList->reset		
+		Do
+			tmpD = Cast(directoryTreeUDT Ptr,fullDirectoryList->getitem)
+			If tmpD<>0 Then
+				put #f,, "<dir<"+tmpD->directory_name+"/><"+tmpD->path+"/>"
 				put #f,, "/>"
 				Put #f,, Chr(13)+Chr(10) 'new line
 			EndIf
@@ -250,11 +311,15 @@ Sub loadVersion(file As String,isNew As UByte=0)
 	tmp->Clear
 	If isNew Then
 		fullFileList_update = fullFileLoadList
+		fullDirectoryList_update = fullDirectoryLoadList
 		fullFileLoadList = 0
+		fullDirectoryLoadList = 0
 		logMSG("set new update version")
 	Else
-		fullFileList = fullFileLoadList
+		fullFileList_update = fullFileLoadList
+		fullDirectoryList_update = fullDirectoryLoadList
 		fullFileLoadList = 0
+		fullDirectoryLoadList = 0
 		logMSG("set new current version")
 	EndIf
 	logMSG("finish loading",2)
@@ -297,7 +362,29 @@ Sub check4differences
 		EndIf
 	Loop Until tmp = 0
 	set_update_process(1.0)
+	fulldirectoryList_difference = New list_type
 	
+	i = fulldirectoryList_update->itemcount
+	set_update_process(0.0)
+	fulldirectoryList_update->Reset
+	fulldirectoryList->reset
+	Dim As directoryTreeUDT Ptr tmpD
+	Do
+		tmpD = Cast(directoryTreeUDT Ptr,fulldirectoryList_update->getItem)
+		If tmpD <> 0 Then
+			If fulldirectoryList->search(tmpD) = 0 Then
+				fulldirectoryList_difference->Add(tmpD,1)
+				logMSG("found differences in: "+tmpD->directory_name)
+			EndIf
+			add_update_process(1/fulldirectoryList_update->itemcount)
+			
+		EndIf
+		If get_action_exit_flag Then
+			logMSG("ABORT!",-2)
+			Exit sub
+		EndIf
+	Loop Until tmp = 0
+	set_update_process(1.0)
 	
 	logMSG("finish checking",2)
 End Sub
@@ -452,7 +539,6 @@ Sub repairSub(x As Any Ptr)
 	
 	disable_play_button
 	disable_update_button
-	
 	directoryLookUp
 	createCheckSum
 	
@@ -480,13 +566,15 @@ Sub updateSub(x As Any Ptr)
 	
 	'directoryLookUp
 	'createCheckSum
-	download(download_path+"version.txt","./version_neu.txt")
-	loadVersion("version.txt")
-	loadVersion("version_neu.txt",1)
-	deleteFile("version_neu.txt")
-	check4differences
-	versionUpdate
-	
+	if download(download_path+"version.txt","./version_neu.txt") = 0 then
+		logMSG("could not download version file",-1)
+	else
+		loadVersion("version.txt")
+		loadVersion("version_neu.txt",1)
+		deleteFile("version_neu.txt")
+		check4differences
+		versionUpdate
+	end if
 	enable_play_button
 	enable_repair_button
 	set_action_exit_flag(1)
@@ -506,20 +594,6 @@ Sub play
 	startprogram(executeable_file)
 End Sub
 
-Sub test_push
-	Dim As msgboxUDT Ptr tmp = Cast(buttonUDT Ptr,get_window_graphic("mainframe","log"))
-	If tmp = 0 Then Return
-	tmp->pushUp
-	tmp->wasChanged=1
-End Sub
-
-Sub test_pushd
-	Dim As msgboxUDT Ptr tmp = Cast(buttonUDT Ptr,get_window_graphic("mainframe","log"))
-	If tmp = 0 Then Return
-	tmp->pushDown
-	tmp->wasChanged=1
-End Sub
-
 Dim As variableUDT repairVar = "repair"
 repairVar.data = @repair
 repairVar.setPTR
@@ -531,14 +605,6 @@ updateVar.setPTR
 Dim As variableUDT playVar = "play"
 playVar.data = @play
 playVar.setPTR
-
-Dim As variableUDT beep1 = "disable_play_button"
-beep1.Data = @test_push
-beep1.setPTR
-
-Dim As variableUDT beep2 = "disable_play_button2"
-beep2.Data = @test_pushd
-beep2.setPTR
 
 Dim As variableUDT msglist = "msglist"
 msglist.data = @msgLog

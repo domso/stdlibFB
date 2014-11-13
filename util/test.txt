@@ -81,7 +81,14 @@
 			/>
 			
 		/>
-		
+		<textfield
+			<height<50/>/>
+			<width<100/>/>
+			<string
+				<var<blub2/>/>
+			/>
+			
+		/>
 		
 	
 	
