@@ -30,16 +30,23 @@ Function fileUDT.equals(o As utilUDT Ptr) As Integer
 	
 	If this.file_name <> tmp->file_name Then Return 0
 	If this.path <>  tmp->path Then Return 0
-	
+		
 	If tmp->hashList = 0 Then
 		If this.hashList = 0 Then
 			Return 1
 		EndIf
 		Return 0
 	EndIf
+	If this.hashList = 0 Then
+		If tmp->hashList = 0 Then
+			Return 1
+		EndIf
+		Return 0
+	EndIf
+	
 	This.hashlist->Reset
 	tmp->hashList->Reset
-	
+
 	Do
 		tmpHash = Cast(crc32_hash Ptr,this.hashlist->getItem)
 		If tmpHash <> 0 Then
