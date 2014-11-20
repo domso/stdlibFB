@@ -1,10 +1,11 @@
-<dir<util/><.//>/>
-<dir<store/><.//>/>
 <dir<lang/><.//>/>
-<dir<gui/><.//>/>
 <dir<data/><.//>/>
-<file<bild.bmp/><./gui//><3130192941/>/>
+<dir<util/><.//>/>
+<dir<gui/><.//>/>
+<dir<store/><.//>/>
 <file<test.bmp/><./gui//><3011498934/>/>
+<file<bild.bmp/><./gui//><3130192941/>/>
 <file<filecheck.exe/><.//><2003259906/>/>
-<file<LICENSE/><.//><1799225467/>/>
 <file<README.md/><.//><211769089/>/>
+<file<filecheck/><.//><496238811/>/>
+<file<LICENSE/><.//><1799225467/>/>

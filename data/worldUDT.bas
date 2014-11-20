@@ -1,6 +1,30 @@
 #include once "../util/util.bas"
 #include once "objUDT.bas"
 
+Dim shared as idUDT GLOBAL_WORLD_ID
+
+type worldUDT extends treeUDT
+	private:
+		as uinteger id
+	public:
+		Declare Constructor
+		Declare Destructor
+		Declare Function toString as String
+end Type
+
+Constructor worldUDT
+	this.id = GLOBAL_WORLD_ID.getNext
+End Constructor
+
+Destructor worldUDT
+	GLOBAL_WORLD_ID.freeID(this.id)
+End Destructor
+
+Function worldUDT.toString as String
+	return "ObjectID: "+str(id)
+End Function
+
+/'
 Type worldUDT
 	As String*9 world_name
 	'... TBD
@@ -72,3 +96,4 @@ Function worldUDT.getAll as list_type ptr
 	
 	return return_list
 end Function
+'/

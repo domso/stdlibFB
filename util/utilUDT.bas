@@ -139,7 +139,7 @@ End Function
 
 Function download(url As String,path As String) As UByte
 	#IF DEFINED(__FB_LINUX__)
-		if shell("wget "+url+ " --quiet -O "+path) then return 0
+		if shell("wget "+url+ " -O "+path) then return 0
 		return 1
 	#elseIF DEFINED(__FB_WIN32__)
 		Dim URLDownloadToFile as function (ByVal pCaller As Long,ByVal szURL As zString ptr,ByVal szFileName As zString ptr,ByVal dwReserved As Long,ByVal lpfnCB As Long) As Long

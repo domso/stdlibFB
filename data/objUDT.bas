@@ -1,5 +1,10 @@
 #Include Once "../util/util.bas"
 
+type objUDT extends treeUDT
+	
+end Type
+
+/'
 Type obj_attributeUDT extends utilUDT
 	Private:
 		As utilUDT Ptr item
@@ -120,4 +125,4 @@ Function objUDT.writeItem(id As Integer,item As utilUDT Ptr,noDelete As UByte=0)
 	tmp->writeItem(item,noDelete)
 End Function
 
-
+'/
