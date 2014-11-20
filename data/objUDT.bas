@@ -1,8 +1,53 @@
 #Include Once "../util/util.bas"
 
+Dim shared as idUDT GLOBAL_OBJ_ID
+Dim As treeUDT o
 type objUDT extends treeUDT
-	
+	private:
+		as uinteger id
+		As UInteger parent_ID
+	public:
+		Declare Constructor
+		Declare Destructor
+		Declare Sub setParentID
+		Declare Sub addObj(obj As objUDT Ptr) 
+		Declare Function getID As UInteger
+		Declare virtual Function toString as String
+		Declare Function equals(o As utilUDT Ptr) As Integer
 end Type
+
+Constructor objUDT
+	this.id = GLOBAL_OBJ_ID.getNext
+End Constructor
+
+Destructor objUDT
+	GLOBAL_OBJ_ID.freeID(this.id)
+End Destructor
+
+Sub objUDT.setParentID
+	Var tmp = Cast(objUDT Ptr,parent)
+	If tmp = 0 Then Return
+	parent_ID = tmp->getID
+End Sub
+
+Sub objUDT.addObj(obj As objUDT Ptr)
+	addTree(obj)
+	setParentID
+End Sub
+
+Function objUDT.getID As UInteger
+	Return id
+End Function
+
+Function objUDT.toString as String
+	return "ObjectID: "+str(id)
+End Function
+
+Function objUDT.equals(o As utilUDT Ptr) As Integer
+	If o = 0 Then Return 0
+	If this.id = Cast(objUDT Ptr,o)->id Then Return 1
+	Return 0
+End Function
 
 /'
 Type obj_attributeUDT extends utilUDT

@@ -81,4 +81,4 @@ charSelData->noreply = 1
 
 charSelload = New protocolUDT("charSelload",7,@charSelData_function)
 
-charSelplay = New protocolUDT("charSelplay",2,@charSelData_function)
+charSelplay = New protocolUDT("charSelplay",8,@charSelData_function)

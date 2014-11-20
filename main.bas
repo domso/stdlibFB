@@ -12,7 +12,8 @@
  network.CreateServer(9834,10)
 
 startNetworkThread()
-do
+Do
+	Sleep 10,1
 loop
 '	
 'loop

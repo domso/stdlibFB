@@ -22,7 +22,7 @@ do
 	r = check_authentication
 	if r = 1 then
 		print "yeah!"
-		tmp2->Send(1,0,0,"",0,0)
+		tmp->Send(1,0,0,"",0,0)
 		sleep
 	end if
 	if r = -1 then

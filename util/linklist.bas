@@ -63,7 +63,7 @@ Sub list_type.add(data_item As utilUDT Ptr,DisableRemove As Integer=0)
 '	Return
 	If DisableRemove=0 Then
 		MutexUnLock list_mutex
-		remove(data_item)
+		remove(data_item,1)
 		MutexLock list_mutex
 	EndIf
 	'If DisableRemove=2 Then remove(data_item,1)
@@ -132,7 +132,7 @@ Sub list_type.addFront(data_item As utilUDT Ptr,DisableRemove As Integer=0)
 '	Return
 	If DisableRemove=0 Then
 		MutexUnLock list_mutex
-		remove(data_item)
+		remove(data_item,1)
 		MutexLock list_mutex
 	EndIf
 	'If DisableRemove=2 Then remove(data_item,1)
