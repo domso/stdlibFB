@@ -3,7 +3,7 @@
 
 Dim shared as idUDT GLOBAL_WORLD_ID
 
-type worldUDT extends treeUDT
+type worldUDT extends utilUDT
 	private:
 		as uinteger id
 	public:
@@ -21,7 +21,7 @@ Destructor worldUDT
 End Destructor
 
 Function worldUDT.toString as String
-	return "ObjectID: "+str(id)
+	return "WorldID: "+str(id)
 End Function
 
 /'

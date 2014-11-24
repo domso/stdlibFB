@@ -4,24 +4,43 @@ Dim shared as idUDT GLOBAL_OBJ_ID
 Dim As treeUDT o
 type objUDT extends treeUDT
 	private:
+		As UByte accessEnable  = 0
+		As utilUDT Ptr data
 		as uinteger id
 		As UInteger parent_ID
+		As UInteger world_ID
+		As list_type Ptr change_list
 	public:
-		Declare Constructor
+		As Any Ptr objMutex
+		Declare Constructor(Data As utilUDT Ptr=0)
 		Declare Destructor
 		Declare Sub setParentID
-		Declare Sub addObj(obj As objUDT Ptr) 
+		Declare Sub addObj(obj As objUDT Ptr)
+		Declare Sub open
+		Declare Sub Close
+		Declare Sub update
+		Declare Sub setWorld_ID(id As UInteger)
+		Declare Sub setchange_list(list As list_type Ptr)
+		Declare Function getData As utilUDT ptr
 		Declare Function getID As UInteger
+		Declare Function getparent_ID As UInteger
+		Declare Function getworld_ID As UInteger
 		Declare virtual Function toString as String
 		Declare Function equals(o As utilUDT Ptr) As Integer
 end Type
 
-Constructor objUDT
+Constructor objUDT(Data As utilUDT Ptr=0)
 	this.id = GLOBAL_OBJ_ID.getNext
+	this.data = Data
+	objMutex = mutexcreate
 End Constructor
 
 Destructor objUDT
 	GLOBAL_OBJ_ID.freeID(this.id)
+	If Cast(objUDT Ptr,parent) <> 0 Then
+		Cast(objUDT Ptr,parent)->child.remove(@This,1)
+	EndIf
+	MutexDestroy objMutex
 End Destructor
 
 Sub objUDT.setParentID
@@ -32,11 +51,44 @@ End Sub
 
 Sub objUDT.addObj(obj As objUDT Ptr)
 	addTree(obj)
-	setParentID
+	obj->setParentID
 End Sub
+
+Sub objUDT.open
+	MutexLock objMutex
+	accessEnable = 1
+End Sub
+
+Sub objUDT.close
+	MutexUnLock objMutex
+	accessEnable = 0
+End Sub
+
+Sub objUDT.update
+	If change_list = 0 Then Return
+	change_list->Add(@This,1)
+End Sub
+
+Sub objUDT.setchange_list(list As list_type Ptr)
+	this.change_list = list
+End Sub
+
+Function objUDT.getData As utilUDT Ptr
+	If this.data = 0 Then Return 0
+	If this.accessEnable = 0 Then Return 0
+	Return this.data
+End Function
 
 Function objUDT.getID As UInteger
 	Return id
+End Function
+
+Function objUDT.getparent_ID As UInteger
+	Return parent_id
+End Function
+
+Function objUDT.getworld_ID As UInteger
+	Return world_id
 End Function
 
 Function objUDT.toString as String
