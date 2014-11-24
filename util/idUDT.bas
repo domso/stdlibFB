@@ -90,7 +90,7 @@ Function idUDT.getNext as Uinteger
 	
 	if DELETE_ID_LIST.itemcount>0 then
 		DELETE_ID_LIST.reset
-		var tmp = DELETE_ID_LIST.getItem
+		var tmp = Cast(ID_DATA Ptr,DELETE_ID_LIST.getItem)
 		if tmp <> 0 then
 			dim as uinteger returnID
 			returnID = tmp->id

@@ -1,32 +1,21 @@
 
 Type utilUDT extends object
-	As Integer id=0,size=0
-	Declare Constructor(id As Integer=0)
-	Declare Virtual Destructor
+	As Integer size=0
+
 	'override
 	Declare virtual Function equals(o As utilUDT Ptr) As Integer
 	Declare virtual Function compareTo(o As utilUDT Ptr) As Integer
 	Declare virtual Function toString As String
 	Declare virtual Function todo As Byte
 	
-	Declare virtual Function isEmpty As Byte
-	
 	'final
 	Declare Function toBINString As String
 	Declare Sub fromBINString(item As String)
 End Type
 
-Constructor utilUDT(id As Integer=0)
-	this.id=id
-End Constructor
-
-Destructor utilUDT
-	
-End Destructor
-
 Function utilUDT.equals(o As utilUDT Ptr) As Integer
 	If o=0 Then Return 0
-	If o->id=this.id Then Return 1
+	If @This = o then Return 1
 	Return 0
 End Function
 
@@ -34,26 +23,19 @@ Function utilUDT.compareTo(o As utilUDT Ptr) As Integer
 	If equals(o)=1 Then Return 0
 	If o=0 Then Return -1
 	
-	If o->id>this.id Then Return -1
-	If o->id<this.id Then Return 1
-	
+	'If o->id0>this.id0 Then Return -1
+	'If o->id0<this.id0 Then Return 1
 	Return 0
 End Function
 
 Function utilUDT.toString As String
-	Return "Element: "+str(this.id)+" @"+Str(@This)
+	Return "<unspecified object>"
 End Function
 
 Function utilUDT.todo As Byte
 	'do something
 	Return 1 'sucess
 	Return 0 'failure
-End Function
-
-
-Function utilUDT.isEmpty As Byte
-	If id=0 Then Return 1
-	Return 0
 End Function
 
 Function utilUDT.toBINString As String
@@ -160,58 +142,6 @@ Function download(url As String,path As String) As UByte
 	#EndIf
 	Return 0
 End Function
-
-Sub startprogram(cmd As String)
-	#IF DEFINED(__FB_LINUX__)
-		Shell("./"+cmd)
-	#elseIF DEFINED(__FB_WIN32__)
-		Shell("start "+cmd)	
-	#EndIf
-End Sub
-
-Sub renameFile(file1 As String,file2 As String,path As String="")
-	#IF DEFINED(__FB_LINUX__)
-		Shell ("mv "+path+file1+" "+path+file2)
-	#ELSEIF DEFINED(__FB_WIN32__)
-		If path<>"" then
-			For i As Integer = 0 To Len(path)
-				If path[i] = Asc("/") Then
-					path[i] = Asc("\")
-				EndIf
-			Next
-		End if
-		Shell "rename "+path+file1+" "+file2
-		If path<>"" then
-			For i As Integer = 0 To Len(path)
-				If path[i] = Asc("\") Then
-					path[i] = Asc("/")
-				EndIf
-			Next
-		End If
-	#endif
-End Sub
-
-Sub deleteFile(file As String)
-	#If DEFINED(__FB_LINUX__)
-		Shell "rm "+file
-	#ELSEIF DEFINED(__FB_WIN32__)
-		If file<>"" then
-			For i As Integer = 0 To Len(file)
-				If file[i] = Asc("/") Then
-					file[i] = Asc("\")
-				EndIf
-			Next
-		End If
-		Shell "del "+file
-		If file<>"" then
-			For i As Integer = 0 To Len(file)
-				If file[i] = Asc("\") Then
-					file[i] = Asc("/")
-				EndIf
-			Next
-		End If
-	#EndIf
-End Sub
 
 Dim shared as String FB_CUSTOMERROR_STRING
 FB_CUSTOMERROR_STRING = "ndef"

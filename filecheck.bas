@@ -241,7 +241,6 @@ Sub createCheckSum
 	Dim As fileUDT Ptr tmp
 	fullFileList->Reset
 	set_update_process(0.0)
-	logMSG(Str(fullFileList->itemcount))
 	Dim As Integer i
 	Do
 		tmp = Cast(fileUDT Ptr,fullFileList->getItem)
@@ -474,7 +473,7 @@ Sub versionUpdate
 			If tmp2<>0 Then
 				If tmp2->file_name = tmp->file_name Then
 					logMSG("rename "+tmp2->path + tmp2->file_name + " to " + tmp2->path + "old_"+tmp2->file_name)
-					renameFile(tmp2->file_name,"old_"+tmp2->file_name,tmp2->path)
+					Name tmp2->path+tmp2->file_name,tmp2->path+"old_"+tmp2->file_name
 				EndIf
 			EndIf
 			logMSG("start download: "+download_path + tmp->path + tmp->file_name)
@@ -487,13 +486,11 @@ Sub versionUpdate
 				If tmp2<>0 Then
 					If tmp2->file_name = tmp->file_name Then
 						logMSG("delete old file: "+"old_"+tmp2->file_name)
-						logMSG(patcher_file)
-						logMSG(tmp2->file_name)
 						If patcher_file = tmp2->file_name Then
 							Run patcher_file
 							FreeAll
 						else
-							deleteFile(tmp2->path+"old_"+tmp2->file_name)
+							Kill(tmp2->path+"old_"+tmp2->file_name)
 						EndIf  
 						fullFileList->remove(tmp2)
 						
@@ -504,7 +501,7 @@ Sub versionUpdate
 				completePatch = 0
 				If tmp2<>0 Then
 					If tmp2->file_name = tmp->file_name Then
-						renameFile("old_"+tmp2->file_name,tmp2->file_name,tmp2->path)
+						Name (tmp2->path+"old_"+tmp2->file_name,tmp2->path+tmp2->file_name)
 						logMSG("rename "+tmp2->path + "old_"+tmp2->file_name + " to " + tmp2->path + tmp2->file_name)
 					End If
 					fullFileList->remove(tmp2)
@@ -635,7 +632,7 @@ Sub updateSub(x As Any Ptr)
 	Else
 		loadVersion("version.txt")
 		loadVersion("version_neu.txt",1)
-		deleteFile("version_neu.txt")
+		kill("version_neu.txt")
 		check4differences
 		versionUpdate
 	End if

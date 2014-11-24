@@ -87,7 +87,7 @@ Dim As variableUDT testvar322  = "ilist2"
 testvar322.setList
 Dim As list_type testvar322_list
 for i as integer = 1 to 10 
-	testvar322_list.add(New utilUDT(i))
+	testvar322_list.add(New utilUDT())
 
 next
 
@@ -111,25 +111,18 @@ sleep
 'Dim As  windowUDT Ptr  test9a=New windowUDT("asd0","###1###",New pointUDT(500,400),400,400)
 Dim As Integer i
 
-Dim As Integer fps,fpscount
+Dim As Double fps
 Do
 	ScreenLock
 	zeit=timer
 	
-	i+=1
-	testString3 = str(time)
-	If i Mod 10=0 Then
-		Cls
-		Line(0,0)-(800,600),RGB(125,125,125),bf
-		GUI_UPDATE
-		'WindowTitle Str(GLOBAL_GUI_WINDOW_LIST.itemCount)
-		fpscount+=1
-		fps+=int(1/(Timer-zeit))
-		WindowTitle(Str(int(fps/fpscount)))
-	EndIf
-	
+	Cls
+	Line(0,0)-(800,600),RGB(125,125,125),bf
+	GUI_UPDATE
+	'Sleep ((100/6)-1000*(Timer-zeit)),1
+	WindowTitle Str(1/(Timer-zeit))
 	screenunlock
-	Sleep 1,1
+	'Sleep 1,1
 Loop
 
 	Sleep

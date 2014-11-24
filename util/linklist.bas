@@ -224,6 +224,7 @@ End Sub
 Sub list_type.remove_rec(item As utilUDT Ptr,set As list_item_type ptr,last As list_item_type Ptr)
 	'mutex fehlt!
 	Return 
+	/'
 	If set=0 Then Return
 	If (set->head->id=item->id) Then
 		
@@ -243,7 +244,7 @@ Sub list_type.remove_rec(item As utilUDT Ptr,set As list_item_type ptr,last As l
 		
 	EndIf
 	remove_rec(item,set->tail,set)
-
+	'/
 End Sub
 
 Function list_type.data2list(item As utilUDT Ptr)  As list_item_type Ptr

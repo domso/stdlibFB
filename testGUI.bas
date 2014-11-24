@@ -151,7 +151,7 @@ test9a->AddGraphic(test8)
 
 
 For i As Integer = 1 To 100
-	tmpList->Add(New UtilUDT(i))
+	tmpList->Add(New UtilUDT())
 			
 			'test8->wasChanged=1
 Next
@@ -168,28 +168,13 @@ Do
 	ScreenLock
 	zeit=timer
 	
-	
-	'test3->panel.update
-	
-	i+=1
-
-	If i Mod 100=0 Then
-		'tmpList->Add(New utilUDT(i),1)
-			'test8->wasChanged=1
-	EndIf
-	'test8->wasChanged=1
-	If i Mod 10=0 Then
-		Cls
-		Line(0,0)-(800,600),RGB(125,125,125),bf
-		GUI_UPDATE
-		'WindowTitle Str(GLOBAL_GUI_WINDOW_LIST.itemCount)
-		fpscount+=1
-		fps+=int(1/(Timer-zeit))
-		WindowTitle(Str(int(fps/fpscount)))
-	EndIf
-	
+	Cls
+	Line(0,0)-(800,600),RGB(125,125,125),bf
+	GUI_UPDATE
+	Sleep ((100/6)-1000*(Timer-zeit)),1
+	WindowTitle Str(1/(Timer-zeit))
 	screenunlock
-	Sleep 1,1
+	'Sleep 1,1
 Loop
 
 
