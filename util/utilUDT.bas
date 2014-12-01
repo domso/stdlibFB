@@ -112,20 +112,6 @@ Sub utilUDT.fromBINDIFString(obj As String)
 End Sub
 Randomize timer
 
-#Define count  2'+6381
-Type test extends utilUDT
-	As Integer x(0 To count)
-	Declare Constructor(x As Integer)
-End Type
-
-Constructor test(x As Integer)
-	Dim As Integer j = Int(Rnd*(count))
-	For i As Integer = 0 To 0
-		this.x(j+i) = x*Int(Rnd*count)
-	Next
-	this.size = SizeOf(test)
-End Constructor
-
 Sub utilUDTrepair(BIN_ITEM As Any Ptr,BIN_DEST_ITEM As Any ptr)
 	If BIN_ITEM=0 Then return
 	Dim As String tmp
