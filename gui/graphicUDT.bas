@@ -249,13 +249,13 @@ Sub graphicUDT.repaint
 			If mouseOver=1 And AllowMouseOverEffect=1 Then
 				If buffer(2)<>0 Then Put (position.x,position.y),buffer(2),pset
 			Else
-				If buffer(2)<>0 Then Put (position.x,position.y),buffer(1),PSet
+				If buffer(1)<>0 Then Put (position.x,position.y),buffer(1),PSet
 			EndIf
 		Else
 			If mouseOver=1 And AllowMouseOverEffect=1 Then
 				If buffer(2)<>0 Then Put (position.x,position.y),buffer(2),Alpha
 			Else
-				If buffer(2)<>0 Then Put (position.x,position.y),buffer(1),alpha
+				If buffer(1)<>0 Then Put (position.x,position.y),buffer(1),alpha
 			EndIf
 		endif
 	End if

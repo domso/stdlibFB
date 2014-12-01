@@ -1,7 +1,7 @@
 #Include Once "../util/util.bas"
 
 Dim shared as idUDT GLOBAL_OBJ_ID
-Dim As treeUDT o
+'Dim As treeUDT o
 type objUDT extends treeUDT
 	private:
 		As UByte accessEnable  = 0
@@ -100,6 +100,8 @@ Function objUDT.equals(o As utilUDT Ptr) As Integer
 	If this.id = Cast(objUDT Ptr,o)->id Then Return 1
 	Return 0
 End Function
+
+
 
 /'
 Type obj_attributeUDT extends utilUDT

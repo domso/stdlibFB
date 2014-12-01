@@ -168,10 +168,10 @@ Function fpars(in as String) as Double
 	return fpars_intern(in)
 end Function
 
-print fpars("x=int(rnd()*100x")
+print fpars("x=int(rnd()*100)")
 print fpars("x*x")
-print fpars("y=x;y"));
-print fpars("y*2+5")
-
-print fpars("122%100")
+print fpars("y=x;y")
+print fpars("x*2+5")
+Print fpars("122%100")
+If PARSER_SYNTAX_ERROR Then Print "PARSER_SYNTAX_ERROR"
 sleep

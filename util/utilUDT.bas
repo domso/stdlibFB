@@ -11,6 +11,8 @@ Type utilUDT extends object
 	'final
 	Declare Function toBINString As String
 	Declare Sub fromBINString(item As String)
+	Declare Function toBINDIFString(obj As utilUDT Ptr) As String
+	Declare Sub fromBINDIFString(obj As String)
 End Type
 
 Function utilUDT.equals(o As utilUDT Ptr) As Integer
@@ -40,24 +42,89 @@ End Function
 
 Function utilUDT.toBINString As String
 	Dim As String tmp
-	Dim As Any Ptr item=@this
+	Dim As UByte Ptr item=Cast(UByte Ptr,Cast(any Ptr,@this))
 
 	If size=0 Then Return ""
 	tmp=Space(size)
 	For toString_i As Integer = SizeOf(Any Ptr) To size-1
-		tmp[toString_i]=Cast(UByte ptr,item)[toString_i]
+		tmp[toString_i]=item[toString_i]
 	Next
 	Return tmp
 End Function
 
 Sub utilUDT.fromBINString( item As String )
-	Dim As Any Ptr destPTR=@This
+	Dim As UByte Ptr destPTR = Cast(UByte Ptr,Cast(any Ptr,@this))
 	If item="" Then Return
 	If len(item)<size Then Return
 	For toString_i As Integer = SizeOf(Any Ptr) To size-1
-		Cast(UByte Ptr,destPTR)[toString_i]=item[toString_i]
+		destPTR[toString_i]=item[toString_i]
 	Next
 End Sub
+
+Function utilUDT.toBINDIFString(objInput As utilUDT Ptr) As String
+	If objInput = 0 Or size = 0 Then Return ""
+	If size <> objInput->size Then Return ""
+	'If size>65536 then Return ""
+	Dim As String tmp
+	Dim As UByte tmp2
+	Dim As Integer i
+	Dim As Integer last
+	Dim As UByte Ptr item=Cast(UByte Ptr,Cast(any Ptr,@this))
+	Dim As UByte Ptr obj=Cast(UByte Ptr,Cast(any Ptr,objInput))
+	tmp=String(size,Chr(0))
+
+	For toString_i As Integer = SizeOf(Any Ptr) To size-1
+		tmp2 = item[toString_i] Xor obj[toString_i]
+		If tmp2 Then
+			If tmp[i] Then i+=1
+			tmp[i] = tmp2
+			last = i
+			i+=1
+		Else
+			If tmp[i]=0 Then i+=1
+			If tmp[i]=255 Then i+=2 
+			tmp[i]+=1
+		EndIf
+		If i>=Len(tmp)-1 Then tmp+=String(2,Chr(0))
+	Next
+	Return Left(tmp,last+1)
+End Function
+
+Sub utilUDT.fromBINDIFString(obj As String)
+	Dim As UByte Ptr destPTR = Cast(UByte Ptr,Cast(any Ptr,@this))
+	If obj="" Then Return
+	Dim As Integer i = 0
+	Dim As Integer j = SizeOf(Any Ptr)
+	Dim As Integer maxI = len(obj)
+	Dim As Integer maxJ = size
+	Do
+		If obj[i] Then
+			destPTR[j] = destPTR[j] Xor obj[i]
+			i+=1
+			j+=1
+		Else
+			j+=obj[i+1]
+			i+=2
+		EndIf
+		If i>maxI Then Exit do
+		If j>maxJ Then Exit do
+	Loop
+End Sub
+Randomize timer
+
+#Define count  2'+6381
+Type test extends utilUDT
+	As Integer x(0 To count)
+	Declare Constructor(x As Integer)
+End Type
+
+Constructor test(x As Integer)
+	Dim As Integer j = Int(Rnd*(count))
+	For i As Integer = 0 To 0
+		this.x(j+i) = x*Int(Rnd*count)
+	Next
+	this.size = SizeOf(test)
+End Constructor
 
 Sub utilUDTrepair(BIN_ITEM As Any Ptr,BIN_DEST_ITEM As Any ptr)
 	If BIN_ITEM=0 Then return

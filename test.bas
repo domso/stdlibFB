@@ -119,9 +119,10 @@ Do
 	Cls
 	Line(0,0)-(800,600),RGB(125,125,125),bf
 	GUI_UPDATE
-	'Sleep ((100/6)-1000*(Timer-zeit)),1
+	'
+	ScreenUnLock
+	Sleep ((100/6)-1000*(Timer-zeit)),1
 	WindowTitle Str(1/(Timer-zeit))
-	screenunlock
 	'Sleep 1,1
 Loop
 
