@@ -148,6 +148,14 @@ Function delWhiteSpace(text As String) As String
 	Return outputString
 End Function
 
+Function isPrefixString(text as string, prefix as String) as ubyte
+	if len(prefix)>len(text) then return 0
+	for i as integer = 0 to len(prefix)-1
+		if text[i] <> prefix[i] then return 0
+	next
+	return 1
+End Function
+
 Function file2String(file As String,delWS As UByte=0) As String
 	Dim As Integer f = FreeFile
 	Dim As String outputstring	
