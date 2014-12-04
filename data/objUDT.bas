@@ -6,21 +6,22 @@ type objUDT extends treeUDT
 	private:
 		As UByte accessEnable  = 0
 		As utilUDT Ptr data
+		As utilUDT Ptr dataCopy
+		As String updateString
 		as uinteger id
 		As UInteger parent_ID
 		As UInteger world_ID
-		As list_type Ptr change_list
+		As UInteger size
 	public:
 		As Any Ptr objMutex
-		Declare Constructor(Data As utilUDT Ptr=0)
+		Declare Constructor(Data As utilUDT Ptr=0,size As UInteger=0)
 		Declare Destructor
 		Declare Sub setParentID
 		Declare Sub addObj(obj As objUDT Ptr)
 		Declare Sub open
 		Declare Sub Close
-		Declare Sub update
 		Declare Sub setWorld_ID(id As UInteger)
-		Declare Sub setchange_list(list As list_type Ptr)
+
 		Declare Function getData As utilUDT ptr
 		Declare Function getID As UInteger
 		Declare Function getparent_ID As UInteger
@@ -29,9 +30,11 @@ type objUDT extends treeUDT
 		Declare Function equals(o As utilUDT Ptr) As Integer
 end Type
 
-Constructor objUDT(Data As utilUDT Ptr=0)
+Constructor objUDT(Data As utilUDT Ptr=0,size As UInteger=0)
 	this.id = GLOBAL_OBJ_ID.getNext
 	this.data = Data
+	this.size = size
+	If Data<>0 Then dataCopy = Data->copy
 	objMutex = mutexcreate
 End Constructor
 
@@ -57,20 +60,17 @@ End Sub
 Sub objUDT.open
 	MutexLock objMutex
 	accessEnable = 1
+	*dataCopy = *data
 End Sub
 
 Sub objUDT.close
-	MutexUnLock objMutex
+	If dataCopy<>0 Then 
+		updateString = dataCopy->toBinDIFString(data)
+		dataCopy->frombinDIFString(updateString)
+	EndIf
+	
 	accessEnable = 0
-End Sub
-
-Sub objUDT.update
-	If change_list = 0 Then Return
-	change_list->Add(@This,1)
-End Sub
-
-Sub objUDT.setchange_list(list As list_type Ptr)
-	this.change_list = list
+	MutexUnLock objMutex
 End Sub
 
 Function objUDT.getData As utilUDT Ptr

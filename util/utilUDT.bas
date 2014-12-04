@@ -13,6 +13,7 @@ Type utilUDT extends object
 	Declare Sub fromBINString(item As String)
 	Declare Function toBINDIFString(obj As utilUDT Ptr) As String
 	Declare Sub fromBINDIFString(obj As String)
+	Declare Function copy As utilUDT ptr
 End Type
 
 Function utilUDT.equals(o As utilUDT Ptr) As Integer
@@ -110,7 +111,13 @@ Sub utilUDT.fromBINDIFString(obj As String)
 		If j>maxJ Then Exit do
 	Loop
 End Sub
-Randomize timer
+
+Function utilUDT.copy As utilUDT Ptr
+	If this.size = 0 Then Return 0
+	Var tmp = Allocate(this.size)
+	*Cast(utilUDT Ptr,tmp) = this
+	Return Cast(utilUDT Ptr,tmp)
+End Function
 
 Sub utilUDTrepair(BIN_ITEM As Any Ptr,BIN_DEST_ITEM As Any ptr)
 	If BIN_ITEM=0 Then return
