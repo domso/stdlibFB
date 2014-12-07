@@ -114,9 +114,12 @@ End Sub
 
 Function utilUDT.copy As utilUDT Ptr
 	If this.size = 0 Then Return 0
-	Var tmp = Allocate(this.size)
-	*Cast(utilUDT Ptr,tmp) = this
-	Return Cast(utilUDT Ptr,tmp)
+	Dim As UByte ptr tmp = Allocate(this.size)
+	Dim As UByte Ptr item=Cast(UByte Ptr,Cast(any Ptr,@This))
+	For copy_i As Integer = SizeOf(Any Ptr) To This.size-1
+		tmp[copy_i]=item[copy_i]
+	Next
+	Return Cast(utilUDT Ptr,Cast(Any Ptr,tmp))
 End Function
 
 Sub utilUDTrepair(BIN_ITEM As Any Ptr,BIN_DEST_ITEM As Any ptr)

@@ -3,7 +3,7 @@
 Dim shared as idUDT GLOBAL_OBJ_ID
 'Dim As treeUDT o
 type objUDT extends treeUDT
-	private:
+	'private:
 		As UByte accessEnable  = 0
 		As utilUDT Ptr data
 		As utilUDT Ptr dataCopy
@@ -12,7 +12,7 @@ type objUDT extends treeUDT
 		As UInteger parent_ID
 		As UInteger world_ID
 		As UInteger size
-	public:
+	'public:
 		As Any Ptr objMutex
 		Declare Constructor(Data As utilUDT Ptr=0,size As UInteger=0)
 		Declare Destructor
@@ -21,7 +21,10 @@ type objUDT extends treeUDT
 		Declare Sub open
 		Declare Sub Close
 		Declare Sub setWorld_ID(id As UInteger)
-
+		Declare Sub delUpdate
+		Declare Sub useUpdate(us As String) 
+		
+		Declare Function getUpdate As String
 		Declare Function getData As utilUDT ptr
 		Declare Function getID As UInteger
 		Declare Function getparent_ID As UInteger
@@ -34,7 +37,7 @@ Constructor objUDT(Data As utilUDT Ptr=0,size As UInteger=0)
 	this.id = GLOBAL_OBJ_ID.getNext
 	this.data = Data
 	this.size = size
-	If Data<>0 Then dataCopy = Data->copy
+	If Data<>0 Then dataCopy = this.Data->copy
 	objMutex = mutexcreate
 End Constructor
 
@@ -64,14 +67,30 @@ Sub objUDT.open
 End Sub
 
 Sub objUDT.close
-	If dataCopy<>0 Then 
-		updateString = dataCopy->toBinDIFString(data)
+	If dataCopy<>0 Then
+		updateString = dataCopy->toBinDIFString(this.data)
 		dataCopy->frombinDIFString(updateString)
 	EndIf
 	
 	accessEnable = 0
 	MutexUnLock objMutex
 End Sub
+
+Sub objUDT.delUpdate
+	updateString = ""
+End Sub
+
+Sub objUDT.useUpdate(us As String)
+	If this.data = 0 Then Return
+	If this.accessEnable = 1 Then Return
+	If us = "" Then Return 
+	this.data->fromBinDIFString(us)
+	this.dataCopy->fromBinDIFString(us)
+End Sub
+
+Function objUDT.getUpdate As String
+	Return updateString
+End Function
 
 Function objUDT.getData As utilUDT Ptr
 	If this.data = 0 Then Return 0
@@ -100,7 +119,6 @@ Function objUDT.equals(o As utilUDT Ptr) As Integer
 	If this.id = Cast(objUDT Ptr,o)->id Then Return 1
 	Return 0
 End Function
-
 
 
 /'
