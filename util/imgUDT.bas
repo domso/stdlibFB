@@ -53,3 +53,4 @@ Function getIMG(id_name As String) As imgUDT Ptr
 	Delete tmp
 	Return tmp2
 End Function
+
