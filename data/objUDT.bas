@@ -7,11 +7,12 @@ type objUDT extends treeUDT
 		As UByte accessEnable  = 0
 		As utilUDT Ptr data
 		As utilUDT Ptr dataCopy
-		As String updateString
+		As String updateString 
 		as uinteger id
 		As UInteger parent_ID
 		As UInteger world_ID
 		As UInteger size
+		As UInteger version = 0
 	'public:
 		As Any Ptr objMutex
 		Declare Constructor(Data As utilUDT Ptr=0,size As UInteger=0)
@@ -25,7 +26,8 @@ type objUDT extends treeUDT
 		Declare Sub useUpdate(us As String) 
 		
 		Declare Function getUpdate As String
-		Declare Function getData As utilUDT ptr
+		Declare Function getData As utilUDT Ptr
+		Declare Function isAccess As Ubyte
 		Declare Function getID As UInteger
 		Declare Function getparent_ID As UInteger
 		Declare Function getworld_ID As UInteger
@@ -38,7 +40,8 @@ Constructor objUDT(Data As utilUDT Ptr=0,size As UInteger=0)
 	this.data = Data
 	this.size = size
 	If Data<>0 Then dataCopy = this.Data->copy
-	objMutex = mutexcreate
+	objMutex = MutexCreate
+		
 End Constructor
 
 Destructor objUDT
@@ -63,13 +66,20 @@ End Sub
 Sub objUDT.open
 	MutexLock objMutex
 	accessEnable = 1
-	*dataCopy = *data
+
 End Sub
 
 Sub objUDT.close
 	If dataCopy<>0 Then
-		updateString = dataCopy->toBinDIFString(this.data)
-		dataCopy->frombinDIFString(updateString)
+		If updateString = "" then
+			updateString = dataCopy->toBinDIFString(this.data)
+			dataCopy->frombinDIFString(updateString)
+		Else
+			Dim As String updateTMPString
+			updateTMPString = dataCopy->toBinDIFString(this.data)
+			dataCopy->frombinDIFString(updateTMPString)
+			updateString = combineDIFString(updateString,updateTMPString)
+		End if
 	EndIf
 	
 	accessEnable = 0
@@ -77,7 +87,9 @@ Sub objUDT.close
 End Sub
 
 Sub objUDT.delUpdate
-	updateString = ""
+	If this.accessEnable = 1 Then Return
+	updateString = Mid(updateString,size+1)
+	version+=1
 End Sub
 
 Sub objUDT.useUpdate(us As String)
@@ -89,13 +101,19 @@ Sub objUDT.useUpdate(us As String)
 End Sub
 
 Function objUDT.getUpdate As String
+	If this.accessEnable = 1 Then Return ""
 	Return updateString
+	'Return left(updateString,size)
 End Function
 
 Function objUDT.getData As utilUDT Ptr
 	If this.data = 0 Then Return 0
 	If this.accessEnable = 0 Then Return 0
 	Return this.data
+End Function
+
+Function objUDT.isAccess As UByte
+	Return this.accessEnable
 End Function
 
 Function objUDT.getID As UInteger
@@ -119,6 +137,49 @@ Function objUDT.equals(o As utilUDT Ptr) As Integer
 	If this.id = Cast(objUDT Ptr,o)->id Then Return 1
 	Return 0
 End Function
+/' DEMO
+Type test extends utilUDT
+	As Integer x 
+End Type
+
+Var x1 = New test
+x1->x = 50
+x1->size=SizeOf(test)
+
+
+Var x2 = New test
+x2->x = 50
+x2->size=SizeOf(test)
+
+Var y1 = New objUDT(x1,SizeOf(test))
+Var y2 = New objUDT(x2,SizeOf(test))
+
+Dim As Double zeit = timer
+If y1->isAccess=0 Then
+	
+	y1->Open
+	Cast(test Ptr,y1->getData)->x = 25
+	y1->Close
+	
+	y1->Open
+	Cast(test Ptr,y1->getData)->x = 21
+	y1->Close
+	
+End If
+Dim As String tmp = y1->getUpdate
+tmp = packBINDIFString(tmp)
+tmp = unpackBINDIFString(tmp,SizeOf(test))
+y2->useUpdate(tmp)
+If tmp<>"" Then y1->delupdate
+Print Timer-zeit
+
+y2->Open
+Print Cast(test Ptr,y2->getData)->x
+y2->Close
+sleep
+
+'/
+
 
 
 /'

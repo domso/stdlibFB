@@ -67,15 +67,45 @@ Function utilUDT.toBINDIFString(objInput As utilUDT Ptr) As String
 	If size <> objInput->size Then Return ""
 	'If size>65536 then Return ""
 	Dim As String tmp
-	Dim As UByte tmp2
-	Dim As Integer i
-	Dim As Integer last
 	Dim As UByte Ptr item=Cast(UByte Ptr,Cast(any Ptr,@this))
 	Dim As UByte Ptr obj=Cast(UByte Ptr,Cast(any Ptr,objInput))
 	tmp=String(size,Chr(0))
-
 	For toString_i As Integer = SizeOf(Any Ptr) To size-1
-		tmp2 = item[toString_i] Xor obj[toString_i]
+		tmp[toString_i] = item[toString_i] Xor obj[toString_i]
+	Next
+	Return tmp
+End Function
+
+Sub utilUDT.fromBINDIFString(obj As String)
+	Dim As UByte Ptr destPTR = Cast(UByte Ptr,Cast(any Ptr,@this))
+	If obj="" Then Return
+	If Len(obj)<>size Then return
+	For toString_i As Integer = SizeOf(Any Ptr) To size-1
+		destPTR[toString_i] = destPTR[toString_i] Xor obj[toString_i]
+	Next
+End Sub
+
+Function utilUDT.copy As utilUDT Ptr
+	If this.size = 0 Then Return 0
+	Dim As UByte ptr tmp = Allocate(this.size)
+	Dim As UByte Ptr item=Cast(UByte Ptr,Cast(any Ptr,@This))
+	For copy_i As Integer = SizeOf(Any Ptr) To This.size-1
+		tmp[copy_i]=item[copy_i]
+	Next
+	Return Cast(utilUDT Ptr,Cast(Any Ptr,tmp))
+End Function
+
+Function packBINDIFString(in As String) As String
+	If in = "" Then Return ""
+	
+	Dim As UByte tmp2
+	Dim As Integer i
+	Dim As Integer last
+	Dim As String tmp
+	tmp=String(Len(in),Chr(0))
+	
+	For toString_i As Integer = 0 To Len(in)-1
+		tmp2 = in[toString_i]
 		If tmp2 Then
 			If tmp[i] Then i+=1
 			tmp[i] = tmp2
@@ -91,35 +121,34 @@ Function utilUDT.toBINDIFString(objInput As utilUDT Ptr) As String
 	Return Left(tmp,last+1)
 End Function
 
-Sub utilUDT.fromBINDIFString(obj As String)
-	Dim As UByte Ptr destPTR = Cast(UByte Ptr,Cast(any Ptr,@this))
-	If obj="" Then Return
+Function unpackBINDIFString(in As String,size As uinteger) As String
 	Dim As Integer i = 0
-	Dim As Integer j = SizeOf(Any Ptr)
-	Dim As Integer maxI = len(obj)
-	Dim As Integer maxJ = size
+	Dim As Integer j = 0'SizeOf(Any Ptr)
+	Dim As Integer maxI = len(in)-1
+	Dim As Integer maxJ = size-1
+	Dim As String tmp = String(size,Chr(0))
 	Do
-		If obj[i] Then
-			destPTR[j] = destPTR[j] Xor obj[i]
+		If in[i] Then
+			tmp[j] = in[i]
 			i+=1
 			j+=1
 		Else
-			j+=obj[i+1]
+			j+=in[i+1]
 			i+=2
 		EndIf
 		If i>maxI Then Exit do
 		If j>maxJ Then Exit do
 	Loop
-End Sub
+	Return tmp
+End Function
 
-Function utilUDT.copy As utilUDT Ptr
-	If this.size = 0 Then Return 0
-	Dim As UByte ptr tmp = Allocate(this.size)
-	Dim As UByte Ptr item=Cast(UByte Ptr,Cast(any Ptr,@This))
-	For copy_i As Integer = SizeOf(Any Ptr) To This.size-1
-		tmp[copy_i]=item[copy_i]
+Function combineDIFString(in1 As String,in2 As String) As String
+	If Len(in1)<>Len(in2) Then Return ""
+	Dim As String tmp = String(Len(in1),Chr(0))
+	For i As Integer = 0 To Len(in1)-1
+		tmp[i] = in1[i] Xor in2[i]
 	Next
-	Return Cast(utilUDT Ptr,Cast(Any Ptr,tmp))
+	Return tmp
 End Function
 
 Sub utilUDTrepair(BIN_ITEM As Any Ptr,BIN_DEST_ITEM As Any ptr)
