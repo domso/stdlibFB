@@ -47,9 +47,15 @@ Function parseInternalBy(ByRef mainString As String,item As String,itemClose As 
 	If modus=0 Then
 		start = 1
 		ende  = InStr(mainString,item)
-		If ende<>start then
-			Dim As String tmp = Mid(mainString,start,ende-start)
+		If ende<>start Then
+			Dim As String tmp = Mid(mainString,start,ende-start)		
 			mainString = Mid(mainString,ende)
+			Dim As Integer instrI = InStr(tmp,"=")
+			If instrI<>0 Then
+				mainString = "<"+Mid(tmp,instrI+1)+mainString+"/>"
+				tmp = Mid(tmp,1,instrI-1)		
+			EndIf
+			
 			list->Add(New SubString(tmp,modus),1)
 		Else
 			mainString = Mid(mainString,Len(item)+1)
@@ -69,7 +75,8 @@ Function parseInternalBy(ByRef mainString As String,item As String,itemClose As 
 		Dim As String tmp = Mid(mainString,start,ende-1)
 		mainString = Mid(mainString,ende+Len(itemClose))
 		
-		If modus=0 then
+		If modus=0 Then
+			'nicht erreichbar! TBD
 			list->Add(New SubString(tmp,modus),1)
 		Else
 			Dim As SubString Ptr tmpSubString = New SubString(tmp,modus)
@@ -91,7 +98,8 @@ End Function
 Function parseBy(mainString As String,item As String,itemClose As String,list As list_type Ptr=0) As list_type Ptr
 
 	If list=0 Then list = New list_type
-	
+	mainString = item+mainString
+	mainString = mainString+itemClose
 	parseInternalBy(mainString,item,itemClose,list)
 	Return list
 End Function
@@ -104,8 +112,6 @@ Function parseCommand(mainString As String) As list_type Ptr
 End Function
 
 
-
-	
 	
 	
 	

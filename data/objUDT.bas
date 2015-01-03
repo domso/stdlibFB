@@ -64,26 +64,26 @@ Sub objUDT.addObj(obj As objUDT Ptr)
 End Sub
 
 Sub objUDT.open
-	MutexLock objMutex
+	'MutexLock objMutex
 	accessEnable = 1
 
 End Sub
 
 Sub objUDT.close
-	If dataCopy<>0 Then
-		If updateString = "" then
-			updateString = dataCopy->toBinDIFString(this.data)
-			dataCopy->frombinDIFString(updateString)
-		Else
-			Dim As String updateTMPString
-			updateTMPString = dataCopy->toBinDIFString(this.data)
-			dataCopy->frombinDIFString(updateTMPString)
-			updateString = combineDIFString(updateString,updateTMPString)
-		End if
-	EndIf
+	'If dataCopy<>0 Then
+	'	If updateString = "" then
+	'		updateString = dataCopy->toBinDIFString(this.data)
+	'		dataCopy->frombinDIFString(updateString)
+	'	Else
+	'		Dim As String updateTMPString
+	'		updateTMPString = dataCopy->toBinDIFString(this.data)
+	'		dataCopy->frombinDIFString(updateTMPString)
+	'		updateString = combineDIFString(updateString,updateTMPString)
+	'	End if
+	'EndIf
 	
 	accessEnable = 0
-	MutexUnLock objMutex
+	'MutexUnLock objMutex
 End Sub
 
 Sub objUDT.delUpdate
@@ -137,7 +137,7 @@ Function objUDT.equals(o As utilUDT Ptr) As Integer
 	If this.id = Cast(objUDT Ptr,o)->id Then Return 1
 	Return 0
 End Function
-/' DEMO
+ 'DEMO
 Type test extends utilUDT
 	As Integer x 
 End Type
@@ -154,7 +154,15 @@ x2->size=SizeOf(test)
 Var y1 = New objUDT(x1,SizeOf(test))
 Var y2 = New objUDT(x2,SizeOf(test))
 
-Dim As Double zeit = timer
+Dim As Double zeit = Timer
+
+	y1->Open
+	'Cast(test Ptr,y1->getData)->x = 25
+	Dim As Double siwgh = 6/4.5
+	y1->Close
+Print Timer-zeit
+Sleep
+end
 If y1->isAccess=0 Then
 	
 	y1->Open
@@ -178,7 +186,7 @@ Print Cast(test Ptr,y2->getData)->x
 y2->Close
 sleep
 
-'/
+
 
 
 

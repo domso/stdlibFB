@@ -24,7 +24,10 @@ End Function
 
 Function utilUDT.compareTo(o As utilUDT Ptr) As Integer
 	If equals(o)=1 Then Return 0
-	If o=0 Then Return -1
+	If o=0 Then Return 0
+	If Cast(Integer,@This)>Cast(Integer,o) Then Return 1
+	If Cast(Integer,@This)<Cast(Integer,o) Then Return -1
+	Return 0
 	
 	'If o->id0>this.id0 Then Return -1
 	'If o->id0<this.id0 Then Return 1
@@ -32,7 +35,7 @@ Function utilUDT.compareTo(o As utilUDT Ptr) As Integer
 End Function
 
 Function utilUDT.toString As String
-	Return "<unspecified object>"
+	Return "<unspecified object@"+Str(@this)+">"
 End Function
 
 Function utilUDT.todo As Byte
@@ -241,6 +244,16 @@ Function download(url As String,path As String) As UByte
 
 	#EndIf
 	Return 0
+End Function
+
+Function String2Hash(s As String,modulo As UInteger=0) As UInteger
+	Dim As UInteger h
+	h = 0
+	For i As Integer = 0 To Len(s)-1
+		h = 37 * h + s[i]
+	Next
+	If modulo = 0 Then Return h
+	Return h Mod modulo
 End Function
 
 Dim shared as String FB_CUSTOMERROR_STRING

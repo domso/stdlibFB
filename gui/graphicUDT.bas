@@ -245,7 +245,7 @@ Sub graphicUDT.repaint
 		wasChanged=0
 		resize
 		move
-		If useAlpha=0 then
+		If useAlpha=0 Then
 			If mouseOver=1 And AllowMouseOverEffect=1 Then
 				If buffer(2)<>0 Then Put (position.x,position.y),buffer(2),pset
 			Else

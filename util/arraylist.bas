@@ -85,3 +85,83 @@ Function arrayList.contains(item as utilUDT ptr,byref index as uinteger=0) as Ub
 	next
 	return 0
 End Function
+
+
+Function mergeSort(s As String) As String
+	Dim As ubyte tmpC,blockSize,blockStep,tmpPos
+	blockStep=1
+	Do 
+		blockStep*=2
+		For i As Integer = 0 To Len(s)-1 Step blockStep
+			blockSize = blockStep/2
+			tmpPos = i
+			For j As Integer = blockSize To blockstep-1
+				If i+j<Len(s) Then
+					tmpC = s[i+j]
+					For t As Integer = tmpPos To i+(blockSize-1)
+						If s[i+j]<s[t] Then	
+							tmpPos = t+1
+							For ti As Integer = i+(blockSize-1) To t Step -1 
+								s[ti+1] = s[ti]	
+							Next
+							blockSize +=1
+							s[t] = tmpC
+							Exit for
+						EndIf
+					Next
+				End If
+			Next
+		Next
+	Loop Until blockstep > Len(s)		
+	Return s
+End Function
+
+
+Function HeapSift(s As String,i As Integer,l As Integer) As String 
+	Dim As Integer child,parent
+	Dim As UByte tmpSwap
+	parent = i
+	child = 2*i + 1
+	While (child <= l)	
+		If (child+1<=l) Then
+			If s[child] < s[child+1] Then
+				child+=1
+			EndIf
+		EndIf
+		If s[parent] < s[child] Then
+			tmpSwap = s[parent]
+			s[parent] = s[child]
+			s[child] = tmpSwap
+			
+			parent = child
+			child = 2 * parent + 1
+		
+		Else
+			Exit While
+		EndIf			
+	Wend
+	Return s
+End Function
+
+Function buildMaxHeap(s As String,l As integer) As String
+	for i As Integer = l To 0 Step -1 
+		s = HeapSift(s,i,l)
+	Next
+	Return s
+End Function
+
+Function heapsort(s As String) As String
+	Dim As UByte tmpSwap
+	s = buildMaxHeap(s,Len(s)-1)
+	For j As Integer = Len(s)-1 To 1 Step -1
+		tmpSwap = s[0]
+		s[0] = s[j]
+		s[j] = tmpSwap
+		s = HeapSift(s,0,j-1)
+	Next
+	Return s
+End Function
+
+Print heapsort("an example")
+Print mergeSort("an example")
+sleep

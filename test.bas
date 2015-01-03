@@ -121,7 +121,7 @@ Do
 	GUI_UPDATE
 	'
 	ScreenUnLock
-	Sleep ((100/6)-1000*(Timer-zeit)),1
+	'Sleep ((100/6)-1000*(Timer-zeit)),1
 	WindowTitle Str(1/(Timer-zeit))
 	'Sleep 1,1
 Loop
