@@ -113,7 +113,7 @@ Dim As String tmp = V_Data
 			EndIf
 		EndIf
 		
-		network.input.Add(New networkData(V_TSNEID,Mid(tmp,2+SizeOflen,size)),1)
+		network.input.push(New networkData(V_TSNEID,Mid(tmp,2+SizeOflen,size)))
 		tmp=Mid(tmp,2+SizeOflen+size)
 	Loop Until tmp=""
 	

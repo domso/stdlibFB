@@ -9,12 +9,14 @@
 'startdatathread(@container,1)
  
  Print "start server"
+ 
  network.CreateServer(9834,10)
 
 startNetworkThread()
-Do
-	Sleep 10,1
-loop
+Sleep
+'Do
+'	Sleep 10,1
+'loop
 '	
 'loop
  'Do

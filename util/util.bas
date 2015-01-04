@@ -14,3 +14,5 @@
 #Include Once "inkey.bas"
 #Include Once "treeUDT.bas"
 #Include Once "idUDT.bas"
+#Include Once "stackUDT.bas"
+#Include Once "staticstackUDT.bas"

@@ -84,26 +84,36 @@ Function stackUDT.pop As utilUDT Ptr
 	Return tmp
 End Function
 
-Dim As stackUDT tmp
-Dim As UtilUDT Ptr tmpOut
-Dim As UtilUDT Ptr tmpIn = New utilUDT
-
-Dim As Double zeit,diff,sum,comTime
-Dim As Integer count
-comTime = timer
-For i As Integer = 1 To 1000000
-	zeit = Timer
-	tmp.push(tmpIn)
-	tmpOut = tmp.pop
-	diff = Timer - zeit
-	sum+=Abs(diff)
-	count+=1
-Next
-Print Timer-comTime
-tmp.free
-
-Print sum/count
-
-sleep
-
-
+'Dim Shared As stackUDT tmp
+'Dim Shared As UtilUDT Ptr tmpOut
+'Dim Shared As UtilUDT Ptr tmpIn
+'tmpIn = New utilUDT
+'
+'Sub push(x As Any Ptr)
+'	For i As Integer = 1 To 1000000
+'	tmp.push(tmpIn)
+'	next
+'End Sub
+'
+'Sub pop(x As Any Ptr)
+'	For i As Integer = 1 To 1000000
+'	tmpOut = tmp.pop
+'	next
+'End Sub
+'
+'
+'
+'Dim As Double zeit,diff,sum,comTime
+'Dim As Integer count
+'comTime = timer
+'	zeit = Timer
+'	Var t1 = ThreadCreate(@push)
+'	Var t2 = ThreadCreate(@pop)
+'	
+'	ThreadWait t1
+'	ThreadWait t2
+'	diff = Timer - zeit
+'
+'Print diff
+'
+'Sleep

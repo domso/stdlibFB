@@ -1,6 +1,14 @@
 #Include Once "../util/util.bas"
 
 Dim shared as idUDT GLOBAL_OBJ_ID
+
+Type objUDT extends utilUDT
+	
+End Type
+
+
+
+/'
 'Dim As treeUDT o
 type objUDT extends treeUDT
 	'private:
@@ -137,6 +145,8 @@ Function objUDT.equals(o As utilUDT Ptr) As Integer
 	If this.id = Cast(objUDT Ptr,o)->id Then Return 1
 	Return 0
 End Function
+
+
  'DEMO
 Type test extends utilUDT
 	As Integer x 
@@ -185,11 +195,7 @@ y2->Open
 Print Cast(test Ptr,y2->getData)->x
 y2->Close
 sleep
-
-
-
-
-
+'/
 /'
 Type obj_attributeUDT extends utilUDT
 	Private:

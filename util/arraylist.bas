@@ -162,6 +162,6 @@ Function heapsort(s As String) As String
 	Return s
 End Function
 
-Print heapsort("an example")
-Print mergeSort("an example")
-sleep
+'Print heapsort("an example")
+'Print mergeSort("an example")
+'sleep

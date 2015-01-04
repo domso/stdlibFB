@@ -24,7 +24,7 @@ Type networkUDT
 	as Integer BV 
 	As UByte IsServer
 	As list_type log
-	As list_type Input
+	As staticstackUDT Input = 1000
 	As clientUDT Ptr serverCLIENT 
 	Declare Function CreateServer(port As UShort,max_connection As UShort) As Byte 
 	Declare Function CloseServerConnection As Byte 

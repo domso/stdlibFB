@@ -17,12 +17,11 @@ Sub networkThread(tmpType As Any Ptr)
 
 
 		Do
-			network.input.reset
-			tmp=Cast(networkData Ptr,network.input.getItem)
+			tmp=Cast(networkData Ptr,network.input.pop)
 			If tmp<>0 Then
 				client=network.getClient(tmp->V_TSNEID)
 				useProtocol(tmp,client)
-				network.input.remove(tmp)
+				Delete tmp
 			EndIf
 		Loop Until tmp = 0
 		
