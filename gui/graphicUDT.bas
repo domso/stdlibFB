@@ -4,8 +4,8 @@
 #Include Once "../lang/text.bas"
 #Include Once "../lang/img.bas"
 
-Var tmpGraphicIMG = New imgUDT("DEFAULT_GRAPHIC_BACKGROUND","gui/test.bmp",800,600)
-tmpGraphicIMG = New imgUDT("DEFAULT_WINDOW_BACKGROUND","gui/bild.bmp",900,506)
+Var tmpGraphicIMG = New imgUDT(800,600,"gui/test.bmp","DEFAULT_GRAPHIC_BACKGROUND")
+tmpGraphicIMG = New imgUDT(900,506,"gui/bild.bmp","DEFAULT_WINDOW_BACKGROUND")
 
 
 'crack=ImageCreate(800,800)

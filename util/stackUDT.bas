@@ -13,7 +13,6 @@ Type stackUDT extends utilUDT
 		
 		Declare Function getStackLimit As Uinteger
 		Declare Function getStackSize As Uinteger
-		
 		Declare Sub setLIFO
 		Declare Sub setFIFO
 		Declare Sub free

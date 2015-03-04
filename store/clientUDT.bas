@@ -1,4 +1,5 @@
 #Include Once "../util/util.bas"
+#Include Once "clientActionUDT.bas"
 #Include Once "permissionUDT.bas"
 
 Type clientUDT extends utilUDT
@@ -9,6 +10,8 @@ Type clientUDT extends utilUDT
 		as UByte authstage
 		as String username
 		As Double con_time
+		As list_type actionList		
+		
 		
 		Declare Constructor(tsneID As integer)
 	

@@ -94,7 +94,7 @@ Function GLOBAL_Img_load_UDT.action(list As list_type Ptr,parent As Any Ptr=0) A
 		Return 0
 	EndIf
 	
-	Dim As imgUDT ptr tmpIMG = New imgUDT(tmp_id_name,tmp_file,tmp_width,tmp_height)
+	Dim As imgUDT ptr tmpIMG = New imgUDT(tmp_width,tmp_height,tmp_file,tmp_id_name)
 	
 	
 	If tmpIMG->isError<>0 Then

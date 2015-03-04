@@ -5,17 +5,24 @@
 #Include Once "networkMSG.bas"
 #Include Once "networkUDT.bas"
 
-Dim Shared As list_type protocolList
+
+Dim Shared As idUDT protocolUDT_ID
 Dim Shared As list_type protocolMSGList
 
 Type protocolUDT extends utilUDT
 	Private:
 		As permissionUDT Ptr permission
+		
+		Static As protocolUDT ptr ptr lookUpArray
+		Static As Integer lookUpArraySize
+		Static As Integer lookUpArrayCount
+		
 	Public:
-		As UByte useAction=0,id,onlyServer=0,onlyClient=0,noReply=0
+		As UInteger id
+		As UByte useAction=0,onlyServer=0,onlyClient=0,noReply=0
 		As function(As networkData Ptr=0,as clientUDT ptr=0) As UBYTE action
 		As String titel
-		Declare Constructor(titel As String,id As UByte,action As Any Ptr,Rights As UByte=NORMAL,noList As UByte=0)
+		Declare Constructor(titel As String,action As Any Ptr,Rights As UByte=NORMAL)
 		Declare Destructor
 		
 		Declare virtual Function equals(o As utilUDT Ptr) As Integer
@@ -23,30 +30,52 @@ Type protocolUDT extends utilUDT
 		Declare Function getPermission As permissionUDT Ptr
 		Declare virtual Function Send(V_TSNEID as UInteger,V_STATE As UByte,V_STATE_2 As UByte,V_STRINGDATA as String,V_INTEGERDATA As integer,V_DOUBLEDATA As Double) As UByte 
 		Declare virtual Function getSuccess as Ubyte
-		Declare virtual Function getError as Ubyte
+		Declare virtual Function getError as UByte
+		
+		Declare Static Function getProtocol(id As UInteger) As protocolUDT ptr
+		Declare Static Function getProtocolName(id As UInteger) As String
 End Type
 
-Constructor protocolUDT(titel As String,id As UByte,action As Any Ptr,Rights As UByte=NORMAL,noList As UByte=0)
+Dim As Integer protocolUDT.lookUpArraySize
+Dim As Integer protocolUDT.lookUpArrayCount
+Dim As protocolUDT ptr ptr protocolUDT.lookUpArray
+
+Constructor protocolUDT(titel As String,action As Any Ptr,Rights As UByte=NORMAL)
 	this.action = action
 	useAction = 1
 	this.titel = titel
-	this.id = id
+	this.id = protocolUDT_ID.getNext
 	this.permission = New permissionUDT(rights)
 	
-	If noList=0 Then 
-		Dim As protocolUDT Ptr tmp = Cast(protocolUDT Ptr,protocolList.search(@this))
-		if tmp <> 0 then
-			FB_CUSTOMERROR_STRING = "Duplicated protocol id between "+titel+" and "+tmp->titel+"!"
-			FB_CUSTOMERROR(*erfn(),*ermn())
-		end if
-		protocolList.add(@This,1)
-	end if
+	If lookUpArray = 0 Then
+		lookUpArray = Allocate(id*SizeOf(protocolUDT Ptr))
+		lookUpArraySize = id
+	EndIf
+	
+	If id > lookUpArraySize Then
+		Dim As protocolUDT ptr ptr  tmp = Allocate(id*SizeOf(protocolUDT Ptr))
+		For i As Integer = 0 To lookUpArraySize-1
+			tmp[i] = lookUpArray[i]
+		Next
+		Delete lookUpArray
+		lookUpArray = tmp
+		lookUpArraySize = id
+	EndIf
+	
+	lookUpArray[id - 1] = @this
+	lookUpArrayCount+=1
 End Constructor
 
 Destructor protocolUDT
+	protocolUDT_ID.freeID(id)
 	If permission<>0 then
 		Delete permission
 	End If
+	lookUpArrayCount-=1
+	If lookUpArrayCount=0 Then
+		DeAllocate lookUpArray
+		lookUpArray = 0
+	EndIf
 End Destructor
 
 Function protocolUDT.equals(o As utilUDT Ptr) As Integer
@@ -93,6 +122,21 @@ Function protocolUDT.getError as ubyte
 	return 0
 end function
 
+Function protocolUDT.getProtocol(id As UInteger) As protocolUDT Ptr
+	If id >= lookUpArraySize Then Return 0
+	Return lookUpArray[id-1]
+End Function
+
+Function protocolUDT.getProtocolName(id As uinteger) As String
+	If id >= lookUpArraySize Then Return ""
+	Return lookUpArray[id-1]->titel
+End Function
+
+Function getProtocolName(id As uinteger) As String
+	Return protocolUDT.getProtocolName(id)
+End Function
+
+
 Function useProtocol_internal(item As networkData Ptr,client As clientUDT ptr) As UByte
 	If item = 0 Then Return 4
 	If client = 0 Then Return 3
@@ -101,12 +145,8 @@ Function useProtocol_internal(item As networkData Ptr,client As clientUDT ptr) A
 		protocolMSGList.add(New networkMSG(item),1)
 		Return 4
 	EndIf
-	
-	Dim As protocolUDT Ptr tmp = New protocolUDT("---",item->V_TYPE,0,0,1)
-	Delete tmp
-	Dim As protocolUDT Ptr tmp2 = Cast(protocolUDT Ptr,protocolList.search(tmp))
-	
 
+	Dim As protocolUDT Ptr tmp2 = protocolUDT.getProtocol(item->V_TYPE)
 
 	If tmp2=0 Then Return 3
 	If tmp2->onlyServer Then
@@ -144,14 +184,6 @@ Sub useProtocol(item As networkData Ptr,client As clientUDT ptr)
 	
 End Sub
 
-Function getProtocolName(id As Integer) As String
-	Dim As protocolUDT Ptr tmp = New protocolUDT("---",id,0,0,1)
-	Dim As protocolUDT Ptr tmp2 = Cast(protocolUDT Ptr,protocolList.search(tmp))
-	Delete tmp
-	If tmp2 = 0 Then Return "PROTOCOL NOT FOUND!"
-	Return tmp2->titel	
-End Function
-
 
 function foo(x As networkData ptr) As UBYTE
 	Print ":::>>" + x->V_STRINGDATA
@@ -160,64 +192,5 @@ End function
 
 
 '
-Dim As protocolUDT Ptr tmp = New protocolUDT("GLOBAL_SET_IRGENDWAS_FOOL",1,@foo)
-'Dim As protocolUDT Ptr tmp2 = New protocolUDT("GLOBAL_SET_IRGENDWAS_FOOL2",5,@foo,DEVELOPER)
+Dim As protocolUDT Ptr tmp = New protocolUDT("GLOBAL_SET_IRGENDWAS_FOOL",@foo)
 
-
-
-
-'Function fooBeep(x As networkData Ptr) As Integer
-'	Beep
-'	Return 1
-'End Function
-'tmp = New protocolUDT("keine ahnung doofes protocol",2,@fooBeep)
-
-
-
-'
-'Print tmp->action(0)
-'Print tmp->toString
-'sleep
-
-/'
-
-Type GLobalProtocolUDT extends utilUDT
-	Declare Sub error_msg(toID As Integer,errorState As Integer)
-	Declare Sub success_msg(toID As Integer,successState As Integer)
-
-	Declare Function error_string(errorState As Integer) As String
-	
-	Declare Function getError(errorState As Integer) As byte
-	Declare Function getSuccess(successState As Integer) As byte
-End Type
-
-Sub GLobalProtocolUDT.error_msg(toID As Integer,errorState As Integer)
-	network.Send(New networkData(toID,errorState,0,ERROR_MESSAGE,"",0,0),1)	
-End Sub
-Sub GLobalProtocolUDT.success_msg(toID As Integer,successState As Integer)
-	network.Send(New networkData(toID,successState,0,SUCCESS_MESSAGE,"",0,0),1)	
-End Sub
-
-
-Function protocolUDT.getError(errorState As Integer) As Byte
-	Dim As utilUDT Ptr tmp=New utilUDT(errorState)
-	Dim As utilUDT Ptr search=error_log.Search(tmp)
-	Delete tmp
-	If search=0 Then Return 0
-	
-	error_log.remove(tmp)
-	Return 1
-End Function
-
-Function protocolUDT.getSuccess(successState As Integer) As Byte
-	Dim As utilUDT Ptr tmp=New utilUDT(successState)
-	Dim As utilUDT Ptr search=success_log.Search(tmp)
-	Delete tmp
-	If search=0 Then Return 0
-	
-	success_log.remove(tmp)
-	Return 1
-End Function
-
-Dim Shared As GLobalProtocolUDT protocol
-'/

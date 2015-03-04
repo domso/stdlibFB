@@ -2,7 +2,7 @@
 #Include Once "util/util.bas"
 #Include Once "store/store.bas"
 #Include Once "data/data.bas"
-#Include Once "gui/gui.bas"
+'#Include Once "gui/gui.bas"
 
 
 network.CreateClient("127.0.0.1",9834)

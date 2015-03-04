@@ -532,7 +532,7 @@ End Sub
 
 '#########################################################################################################
 
-Var NewGraphicIMG = New imgUDT("NEW_GRAPHIC_BACKGROUND","",800,600)
+Var NewGraphicIMG = New imgUDT(800,600,"NEW_GRAPHIC_BACKGROUND")
 Line NewGraphicIMG->buffer,(0,0)-(800,600),RGBA(0,0,0,0),bf
 
 

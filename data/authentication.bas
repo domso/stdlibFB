@@ -67,15 +67,15 @@ function authstage3_function(ndata As networkData ptr,nclient as clientUDT ptr) 
 End function
 
 'protocolUDT(titel As String,id As UByte,action As Any Ptr,Rights As UByte=NORMAL,noList As UByte=0)
-authstage1 = New protocolUDT("authstage1",2,@authstage1_function,GUEST)
+authstage1 = New protocolUDT("authstage1",@authstage1_function,GUEST)
 authstage1->noreply = 1
 authstage1->onlyServer = 1
 
-authstage2 = New protocolUDT("authstage2",3,@authstage2_function,GUEST)
+authstage2 = New protocolUDT("authstage2",@authstage2_function,GUEST)
 authstage2->noreply = 1
 authstage2->onlyClient = 1
 
-authstage3 = New protocolUDT("authstage3",4,@authstage3_function,GUEST)
+authstage3 = New protocolUDT("authstage3",@authstage3_function,GUEST)
 authstage3->onlyServer = 1
 
 Sub start_authentication(username as String) '...

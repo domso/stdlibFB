@@ -153,6 +153,7 @@ End Function
 Function heapsort(s As String) As String
 	Dim As UByte tmpSwap
 	s = buildMaxHeap(s,Len(s)-1)
+	
 	For j As Integer = Len(s)-1 To 1 Step -1
 		tmpSwap = s[0]
 		s[0] = s[j]
@@ -162,6 +163,23 @@ Function heapsort(s As String) As String
 	Return s
 End Function
 
+'
+'Dim As String tmp,tmp2
+'Print "start"
+'For i As Integer = 1 To 100000
+'	tmp+=Chr(Int(Rnd*255))
+'Next
+'Print "len: " + Str(Len(tmp))
+'tmp2 = heapsort(tmp)
+'
+'For i As Integer = 0 To Len(tmp2)-2
+'	If tmp2[i]>tmp2[i+1] Then Print "[ERROR]"
+'Next
+'Print "finish"
+'sleep
+
+
+
 'Print heapsort("an example")
 'Print mergeSort("an example")
-'sleep
+'Sleep

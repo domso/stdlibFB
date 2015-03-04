@@ -72,13 +72,13 @@ function charSelplay_function(ndata As networkData ptr,nclient as clientUDT ptr)
 	Return 1
 End function
 
-charSelrequest = New protocolUDT("charSelrequest",5,@charSelrequest_function)
+charSelrequest = New protocolUDT("charSelrequest",@charSelrequest_function)
 charSelrequest->onlyServer = 1
 
-charSelData = New protocolUDT("charSelData",6,@charSelData_function)
+charSelData = New protocolUDT("charSelData",@charSelData_function)
 charSelData->onlyClient = 1
 charSelData->noreply = 1
 
-charSelload = New protocolUDT("charSelload",7,@charSelData_function)
+charSelload = New protocolUDT("charSelload",@charSelData_function)
 
-charSelplay = New protocolUDT("charSelplay",8,@charSelData_function)
+charSelplay = New protocolUDT("charSelplay",@charSelData_function)

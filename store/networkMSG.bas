@@ -1,7 +1,7 @@
 #Include Once "../util/util.bas"
 #Include Once "networkData.bas"
 
-Declare Function getProtocolName(id As Integer) As String
+Declare Function getProtocolName(id As uinteger) As String
 
 Type networkMSG extends utilUDT
 	Private:

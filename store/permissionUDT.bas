@@ -69,7 +69,7 @@ Sub rightsUDT.setRight(rightID As UByte)
 End Sub
 
 Sub rightsUDT.removeRight(rightID As UByte)
-	this.rights = this.rights Or not rightID
+	this.rights = this.rights Xor rightID
 End Sub
 
 Function rightsUDT.getRight as Ubyte
