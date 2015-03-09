@@ -1,6 +1,8 @@
 #Include Once "../util/util.bas"
 #Include Once "../store/store.bas"
 
+#Include Once "objUDT.bas"
+#Include Once "controllerUDT.bas"
 
 Dim As protocolUDT Ptr clientAction
 function clientAction_function(ndata As networkData ptr,nclient as clientUDT ptr) As UByte
@@ -19,3 +21,7 @@ End Function
 clientAction = New protocolUDT("clientAction",@clientAction_function,NORMAL)
 clientAction->noreply = 1
 clientAction->onlyServer = 1
+
+
+
+

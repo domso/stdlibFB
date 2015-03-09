@@ -16,3 +16,5 @@
 #Include Once "idUDT.bas"
 #Include Once "stackUDT.bas"
 #Include Once "staticstackUDT.bas"
+#Include Once "hashtableUDT.bas"
+#Include Once "lockUDT.bas"

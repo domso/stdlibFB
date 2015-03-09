@@ -10,7 +10,7 @@
  
  Print "start server"
  
- network.CreateServer(9834,10)
+ network.CreateServer(9834,2)
 
 startNetworkThread()
 Sleep

@@ -38,8 +38,11 @@ Type networkUDT
 	
 	
 	'Client
-	As list_type clientList	
-	Declare Function getClient(id As Integer) As clientUDT ptr
+	As lockUDT clientTable = 10	
+	Declare Sub storeClient(key As UInteger,DataPTR As clientUDT Ptr)
+	Declare Function lockClient(key As UInteger) As clientUDT ptr
+	Declare Sub unlockClient(key As UInteger,DataPTR As clientUDT Ptr)
+	Declare Sub freeClient(key As UInteger,itemDelete As UByte=0) 
 End Type
 
 
@@ -136,17 +139,18 @@ Function networkUDT.CloseClientConnection As Byte
 	Return 1 
 End Function
 
-Function networkUDT.getClient(id As Integer) As clientUDT Ptr
-	If this.isServer=1 then
-		Dim As clientUDT Ptr tmp,tmp2
-		tmp=New clientUDT(id)
-		tmp2=Cast(ClientUDT Ptr,clientList.search(tmp))
-		Delete tmp
-		Return tmp2
-	Else
-		If serverCLIENT = 0 Then
-			serverCLIENT = New ClientUDT(1)
-		EndIf
-		Return serverCLIENT
-	End if
+Sub networkUDT.storeClient(key As UInteger,DataPTR As clientUDT Ptr)
+	clientTable.store(key,DataPTR)
+End Sub
+
+Function networkUDT.lockClient(key As UInteger) As clientUDT Ptr
+	Return Cast(clientUDT Ptr,clientTable.lock(key))
 End Function
+
+Sub networkUDT.unlockClient(key As UInteger,DataPTR As clientUDT Ptr)
+	clientTable.unlock(key,DataPTR)
+End Sub
+
+Sub networkUDT.freeClient(key As UInteger,itemDelete As UByte=0) 
+	clientTable.free(key,itemDelete)
+End Sub

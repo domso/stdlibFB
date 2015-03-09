@@ -6,7 +6,7 @@
 
 
 network.CreateClient("127.0.0.1",9834)
-
+'sleep
 StartnetworkThread()
 start_authentication("Domso")
 

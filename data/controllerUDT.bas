@@ -1,14 +1,16 @@
 #Include Once "../util/util.bas"
+#Include Once "../util/lockUDT.bas"
 #Include Once "../store/clientUDT.bas"
 #Include Once "objUDT.bas"
 
+Dim Shared As lockUDT controllerUDT_lock = 10
 Dim Shared As idUDT controllerUDT_ID
 
 Type controllerUDT extends treeUDT
 	Private:
-		Static As UByte update
-		Static As UByte remove
-		Static As byte result
+		As UByte update
+		As UByte remove
+		As byte result
 	
 		As UInteger ID
 		As clientUDT Ptr Access
@@ -25,10 +27,6 @@ Type controllerUDT extends treeUDT
 		Declare Virtual Function todo As byte
 End Type
 
-Dim As UByte controllerUDT.update
-Dim As UByte controllerUDT.remove
-Dim As byte controllerUDT.result
-
 Constructor controllerUDT(data_ As objUDT ptr,id As UInteger=0)
 
 	this.obj = Data_
@@ -37,9 +35,11 @@ Constructor controllerUDT(data_ As objUDT ptr,id As UInteger=0)
 	Else
 		this.ID = id
 	EndIf
+	controllerUDT_lock.store(id,@This)
 End Constructor
 
 Destructor controllerUDT
+	controllerUDT_lock.free(id)
 	controllerUDT_ID.freeID(ID)
 	If obj <> 0 Then Delete obj
 End Destructor

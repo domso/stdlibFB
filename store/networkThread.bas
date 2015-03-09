@@ -19,8 +19,9 @@ Sub networkThread(tmpType As Any Ptr)
 		Do
 			tmp=Cast(networkData Ptr,network.input.pop)
 			If tmp<>0 Then
-				client=network.getClient(tmp->V_TSNEID)
+				client=network.lockClient(tmp->V_TSNEID)
 				useProtocol(tmp,client)
+				network.unlockClient(tmp->V_TSNEID,client)
 				Delete tmp
 			EndIf
 		Loop Until tmp = 0

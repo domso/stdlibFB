@@ -14,54 +14,21 @@
 
 '##############################################################################################################
 Sub TSNE_Disconnected(ByVal V_TSNEID as UInteger)   'Empfänger für das Disconnect Signal (Verbindung beendet)
-	MutexLock(ClientMutex)                            
-	network.clientList.reset
-	Dim As utilUDT Ptr tmp 
-	Dim As clientUDT Ptr tmp_client 
-	Do
-		tmp=network.clientList.getItem
-		If tmp<>0 Then
-			tmp_client=Cast(clientUDT ptr,tmp)
-			If tmp_client->tsneID=V_TSNEID Then
-				'If tmp_client->character<>0 Then
-					'tmp_client->character->todel=1
-				'End If
-				'If tmp_client->account<>0 Then
-					'tmp_client->account->inUse=0
-				'EndIf
-				network.clientList.remove(tmp_client)
-				MutexUnLock(ClientMutex)
-				return
-			EndIf
-		EndIf
-	Loop Until tmp=0
-	
-	MutexUnLock(ClientMutex)                         
+                           
+	network.clientTable.free(V_TSNEID,1)
+                       
 
 End Sub
 
 
 
 '##############################################################################################################
-Sub TSNE_Connected(ByVal V_TSNEID as UInteger)    
-	MutexLock(ClientMutex)                            
-	network.clientList.reset
-	Dim As utilUDT Ptr tmp 
-	Dim As clientUDT Ptr tmp_client 
-	Do
-		tmp=network.clientList.getItem
-		If tmp<>0 Then
-			tmp_client=Cast(clientUDT ptr,tmp)
-			If tmp_client->tsneID=V_TSNEID Then
-				tmp_client->con_time=Timer
-				MutexUnLock(ClientMutex)
-				Exit Sub
-			EndIf		
-		EndIf
-	Loop Until tmp=0
-	
-	MutexUnLock(ClientMutex)                         
-
+Sub TSNE_Connected(ByVal V_TSNEID as UInteger)         
+	Dim As clientUDT Ptr tmp_client = New clientUDT(V_TSNEID)
+	If tmp_client <> 0 then
+		tmp_client->con_time = timer
+	End If
+	network.storeClient(V_TSNEID,tmp_client)                   
 End Sub
 
 
@@ -73,17 +40,20 @@ Sub TSNE_NewConnection(ByVal V_TSNEID as UInteger, ByVal V_RequestID as Socket, 
 	                            
 	Dim RV as Long       
                              
-	MutexLock(ClientMutex)
+	'MutexLock(ClientMutex)
 
-	
+
 
 	RV = TSNE_Create_Accept(V_RequestID, TNewTSNEID, TReturnIPA, @TSNE_Disconnected, @TSNE_Connected, @TSNE_NewData)    'Da wir noch platz haben akzeptieren wir die verbindung mit den Callbacks
-	network.clientList.add(New clientUDT(TNewTSNEID),1)
 	
+
+
+	
+
 	If RV <> TSNE_Const_NoError Then                  
 	    network.log.Add(New networkMSG(TSNE_GetGURUCode(RV),1),1)
 	End If
-	MutexUnLock(ClientMutex)
+	'MutexUnLock(ClientMutex)
 End Sub
 
 

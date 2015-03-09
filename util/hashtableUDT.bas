@@ -45,18 +45,30 @@ Type hashtableUDT extends utilUDT
 		As UInteger capacity = 0
 		As UInteger count = 0
 		As UByte noMutex
+		As Any Ptr mutex
+		
+		
 	Public:
 		Declare Constructor(capacity As UInteger,noMutex As UByte=0)
 		Declare Destructor
 		
 		Declare Sub Add(key As String,item As utilUDT Ptr)
 		Declare Sub Add(key As uinteger,item As utilUDT Ptr)
+
+		Declare Sub updateData(key As String,item As utilUDT Ptr)
+		Declare Sub updateData(key As uinteger,item As utilUDT Ptr)
+		
+		Declare Sub updateKey(key As String,new_key As String)
+		Declare Sub updateKey(key As uinteger,new_key as uinteger)
 		
 		Declare Sub remove(key As String)
 		Declare Sub remove(key As UInteger)
 		
 		Declare Function get(key As String) As utilUDT Ptr
 		Declare Function get(key As UInteger) As utilUDT Ptr
+		
+		Declare Function getItemUDT(key As String) As hashtableItemUDT_String Ptr
+		Declare Function getItemUDT(key As UInteger) As hashtableItemUDT_uint Ptr
 		
 		Declare Sub clear(noHeadDelete As UByte=0)
 		
@@ -73,7 +85,7 @@ Constructor hashtableUDT(capacity As UInteger,noMutex As UByte=0)
 		Data_[i] = New list_type(noMutex)
 		costs +=SizeOf(list_type)
 	Next
-	Print costs
+	If noMutex = 0 Then mutex = mutexCreate
 End Constructor
 
 Destructor hashtableUDT
@@ -84,64 +96,137 @@ Destructor hashtableUDT
 	Next
 	
 	DeAllocate Data_
+	MutexDestroy mutex
 End Destructor
 
 Sub hashtableUDT.add(key As String,item As utilUDT Ptr)
+	MutexLock mutex
 	Data_[String2Hash(key,capacity)]->Add(New hashtableItemUDT_String(key,item),1)
 	count+=1
 	If (count/capacity > load) Then
 		changeCapacity(1.5)
 	EndIf
+	MutexUnLock mutex
 End Sub
 
 Sub hashtableUDT.add(key As uinteger,item As utilUDT Ptr)
+	MutexLock mutex
 	Data_[key Mod capacity]->Add(New hashtableItemUDT_uint(key,item),1)
 	count+=1
 	If (count/capacity > load) Then
 		changeCapacity(1.5)
 	EndIf
+	MutexunLock mutex
+End Sub
+
+Sub hashtableUDT.updateData(key As String,item As utilUDT Ptr)
+	MutexLock mutex
+	Dim As hashtableItemUDT_String Ptr result = getItemUDT(key)
+	If result<>0 Then
+		result->data_ = item
+	EndIf
+	MutexUnLock mutex
+End Sub
+
+Sub hashtableUDT.updateData(key As uinteger,item As utilUDT Ptr)
+	MutexLock mutex
+	Dim As hashtableItemUDT_uint Ptr result = getItemUDT(key)
+	If result<>0 Then
+		result->data_ = item
+	EndIf
+	MutexUnLock mutex
+End Sub
+
+Sub hashtableUDT.updateKey(key As String,new_Key As String)
+	MutexLock mutex
+	Dim As hashtableItemUDT_String Ptr result = getItemUDT(key)
+	If result<>0 Then
+		result->key = new_key
+	EndIf
+	MutexUnLock mutex
+End Sub
+
+Sub hashtableUDT.updateKey(key As uinteger,new_key As UInteger)
+	MutexLock mutex
+	Dim As hashtableItemUDT_uint Ptr result = getItemUDT(key)
+	If result<>0 Then
+		result->key = new_key
+	EndIf
+	MutexUnLock mutex
 End Sub
 
 Sub hashtableUDT.remove(key As String)
+	MutexLock mutex
 	Dim As list_type ptr tmpList = Data_[String2Hash(key,capacity)]
-	Dim As hashtableItemUDT_String Ptr tmp = New hashtableItemUDT_String(key,0)
-	tmpList->remove(tmp)
-	Delete tmp	
+	tmpList->remove(getItemUDT(key))
+	MutexUnLock mutex
 End Sub
 
 Sub hashtableUDT.remove(key As uinteger)
+	MutexLock mutex
 	Dim As list_type ptr tmpList = Data_[key Mod capacity]
-	Dim As hashtableItemUDT_uint Ptr tmp = New hashtableItemUDT_uint(key,0)
-	tmpList->remove(tmp)
-	Delete tmp	
+	tmpList->remove(getItemUDT(key))
+	MutexUnLock mutex
 End Sub
 
 Function hashtableUDT.get(key As String) As utilUDT Ptr
-	Dim As list_type ptr tmpList = Data_[String2Hash(key,capacity)]
-	Dim As hashtableItemUDT_String Ptr tmp = New hashtableItemUDT_String(key,0)
-	Dim As hashtableItemUDT_String Ptr result = Cast(hashtableItemUDT_String Ptr,tmpList->search(tmp))
-	Delete tmp
+	MutexLock mutex
+	Dim As hashtableItemUDT_String Ptr result = getItemUDT(key)
 	If result<>0 Then
-		Return result->data_
+		Dim As utilUDT Ptr res = result->data_
+		MutexUnLock mutex
+		Return res
 	EndIf
+	MutexUnLock mutex
 	Return 0
 End Function
 
 Function hashtableUDT.get(key As uinteger) As utilUDT Ptr
-	Dim As list_type ptr tmpList = Data_[key Mod capacity]
-	Dim As hashtableItemUDT_uint Ptr tmp = New hashtableItemUDT_uint(key,0)
-	Dim As hashtableItemUDT_uint Ptr result = Cast(hashtableItemUDT_uint Ptr,tmpList->search(tmp))
-	Delete tmp
+	MutexLock mutex
+	Dim As hashtableItemUDT_uint Ptr result = getItemUDT(key)
 	If result<>0 Then
-		Return result->data_
+		Dim As utilUDT Ptr res = result->data_
+		MutexUnLock mutex
+		Return res
 	EndIf
+	MutexUnLock mutex
+	Return 0
+End Function
+
+Function hashtableUDT.getItemUDT(key As String) As hashtableItemUDT_String Ptr
+	Dim As list_type ptr tmpList = Data_[String2Hash(key,capacity)]
+	If tmpList = 0 Then Return 0
+	tmpList->Reset
+	Dim As hashtableItemUDT_String Ptr tmp
+	Do
+		tmp = Cast(hashtableItemUDT_String Ptr,tmpList->getItem)
+		If tmp <> 0 Then
+			If tmp->key = key Then Return tmp
+		EndIf
+	Loop Until tmp = 0
+	Return 0
+End Function
+
+Function hashtableUDT.getItemUDT(key As UInteger) As hashtableItemUDT_uint Ptr
+	Dim As list_type ptr tmpList = Data_[key Mod capacity]
+	If tmpList = 0 Then Return 0
+	tmpList->Reset
+	Dim As hashtableItemUDT_uint Ptr tmp
+	Do
+		tmp = Cast(hashtableItemUDT_uint Ptr,tmpList->getItem)
+		If tmp <> 0 Then
+			If tmp->key = key Then Return tmp
+		EndIf
+	Loop Until tmp = 0
 	Return 0
 End Function
 
 Sub hashtableUDT.clear(noHeadDelete As UByte=0)
+	MutexLock mutex
 	For i As Integer = 0 To this.capacity-1
 		Data_[i]->Clear(noHeadDelete)
 	Next
+	MutexUnLock mutex
 End Sub
 
 Sub hashtableUDT.changeCapacity(factor As Double)
