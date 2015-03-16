@@ -7,7 +7,7 @@
 
 network.CreateClient("127.0.0.1",9834)
 'sleep
-StartnetworkThread()
+Var thread = StartnetworkThread(10)
 start_authentication("Domso")
 
 dim as byte r

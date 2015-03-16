@@ -1,6 +1,7 @@
 #include once "utilUDT.bas"
 #include once "stackUDT.bas"
 
+
 type ID_DATA extends utilUDT
 	as uinteger id
 	Declare Constructor(id as uinteger)

@@ -2,28 +2,49 @@
 
 Type FwdController As controllerUDT
 
+'objUDT-config
 ' Enable : 1
 ' enableTimeUpdate : 2
 ' enableActionUpdate : 4
 ' enableGlobalUpdate : 8
- 
+
+
+Type objUDT_instance extends utilUDT
+	As Any Ptr diffArray
+	As Integer diffArraySize
+	As FwdController Ptr controller
+	Declare Destructor
+	Declare Sub check(size As UInteger)
+End Type
+
+Destructor objUDT_instance
+	If diffArray <> 0 Then DeAllocate diffArray
+End Destructor
+
+Sub objUDT_instance.check(size As UInteger)
+	If size > diffArraySize Or diffArray = 0 Then
+		DeAllocate(diffArray)
+		diffArray = Callocate(size)		
+		diffArraySize = size
+	EndIf
+End Sub
 
 Type objUDT extends utilUDT
 	Private:
 		As UByte config
-		Static As Any ptr diffArray
-		Static As Integer diffArraySize
-		Static As Integer objUDTCount
+		As objUDT_instance Ptr instance
 	Public:
 		
-		Static As FwdController Ptr controller
-		
+			
 		Declare Constructor(size As Integer)
 		Declare Destructor
 		
 		Declare virtual Function TimeUpdate(diffTime As Integer) As byte
-		Declare virtual Function ActionUpdate(actionID As Integer) As byte
+		Declare virtual Function ActionUpdate(actionID As Integer,target As objUDT Ptr) As byte
 		Declare virtual Function GlobalUpdate As byte
+		
+		Declare Sub setInstance(instance As objUDT_instance Ptr)
+		Declare Function hasInstance As UByte
 		
 		Declare Sub set(AttributePTR As any Ptr,data_ As any Ptr,size As UInteger)
 		Declare Function packBINDIF As String
@@ -45,38 +66,22 @@ Type objUDT extends utilUDT
 		Declare Function isEnableGlobalUpdate As UByte
 End Type
 
-Dim As Integer objUDT.diffArraySize
-Dim As Integer objUDT.objUDTCount
-Dim As Any ptr objUDT.diffArray
-Dim As FwdController Ptr objUDT.controller
+
 
 Constructor objUDT(size As Integer)
 	this.Enable
-	
-	base.size = size
-	
-	If size > diffArraySize Or diffArray = 0 Then
-		DeAllocate(diffArray)
-		diffArray = Callocate(size)		
-		diffArraySize = size
-	EndIf
-	objUDTCount+=1
-	
+	base.size = size	
 End Constructor
 
 Destructor objUDT
-	objUDTCount-=1
-	if objUDTCount = 0 Then
-		DeAllocate(diffArray)
-		diffArray = 0
-	EndIf
+	
 End Destructor
 
 Function objUDT.TimeUpdate(diffTime As Integer) As Byte
 	Return 0
 End Function
 
-Function objUDT.ActionUpdate(actionID As Integer) As Byte
+Function objUDT.ActionUpdate(actionID As Integer,target As objUDT Ptr) As Byte
  	Return 0
 End Function
 
@@ -84,19 +89,30 @@ Function objUDT.GlobalUpdate As Byte
  	Return 0
 End Function
 
+Sub objUDT.setInstance(instance As objUDT_instance Ptr)
+	This.instance = instance
+End Sub
+
+Function objUDT.hasInstance As UByte
+	If this.instance = 0 Then Return 0
+	Return 1
+End Function
+
 Sub objUDT.set(AttributePTR As any Ptr,data_ As any Ptr,size As UInteger)
-	If AttributePTR = 0 Or data_ = 0 Or size = 0  Then Return
+	If AttributePTR = 0 Or data_ = 0 Or size = 0 Or instance = 0 Then Return
+	If instance->diffArray = 0 Then return
 	Dim As Integer ptr_ = Cast(Integer,attributePTR) - Cast(Integer,@this)
 	'Print ptr_
 	
 	For i As Integer = 0 To size-1
-		*Cast(UByte Ptr,diffArray + ptr_ + i) = *(Cast(UByte Ptr,AttributePTR)+i) Xor *(Cast(UByte Ptr,data_)+i)
+		*Cast(UByte Ptr,instance->diffArray + ptr_ + i) = *(Cast(UByte Ptr,AttributePTR)+i) Xor *(Cast(UByte Ptr,data_)+i)
 		*(Cast(UByte Ptr,AttributePTR)+i) = *(Cast(UByte Ptr,data_)+i)
 	Next
 End Sub
 
 Function objUDT.packBINDIF As String
-	If diffArray = 0 Then Return ""
+	If instance = 0 Then Return ""
+	If instance->diffArray = 0 Then Return ""
 	
 	Dim As UByte tmp2
 	Dim As Integer i
@@ -105,9 +121,9 @@ Function objUDT.packBINDIF As String
 	tmp=String(size,Chr(0))
 
 	For toString_i As Integer = 0 To size-1
-		tmp2 = *Cast(UByte Ptr,diffArray + toString_i)
+		tmp2 = *Cast(UByte Ptr,instance->diffArray + toString_i)
 		If tmp2 Then
-			*Cast(UByte Ptr,diffArray + toString_i) = 0
+			*Cast(UByte Ptr,instance->diffArray + toString_i) = 0
 			If tmp[i] Then i+=1
 			tmp[i] = tmp2
 			last = i

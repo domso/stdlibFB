@@ -10,9 +10,7 @@ Type clientUDT extends utilUDT
 		as UByte authstage
 		as String username
 		As Double con_time
-		As list_type actionList		
-		
-		
+	
 		Declare Constructor(tsneID As integer)
 	
 		Declare Function equals(o As utilUDT Ptr) As Integer

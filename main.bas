@@ -12,8 +12,11 @@
  
  network.CreateServer(9834,2)
 
-startNetworkThread()
+Var thread = StartnetworkThread(10)
 Sleep
+thread->Stop
+'Delete thread
+
 'Do
 '	Sleep 10,1
 'loop

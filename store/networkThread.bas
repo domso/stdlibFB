@@ -7,36 +7,34 @@
 #Include Once "protocolUDT.bas"
 
 
-Sub networkThread(tmpType As Any Ptr)
+Sub networkThread(tmpThread As Any Ptr)
 	Dim As networkData ptr tmp
 	Dim As ClientUDT ptr client
+	Dim As threadControllUDT Ptr thread
+	
+	thread = Cast(threadControllUDT Ptr,tmpThread)
 	
 	Do
-		
-	
+		tmp=Cast(networkData Ptr,network.input.pop)
+		If tmp<>0 Then
+			client=network.lockClient(tmp->V_TSNEID)
+			useProtocol(tmp,client)
+			network.unlockClient(tmp->V_TSNEID,client)
+			Delete tmp
+		EndIf
+	Loop While thread->check
 
-
-		Do
-			tmp=Cast(networkData Ptr,network.input.pop)
-			If tmp<>0 Then
-				client=network.lockClient(tmp->V_TSNEID)
-				useProtocol(tmp,client)
-				network.unlockClient(tmp->V_TSNEID,client)
-				Delete tmp
-			EndIf
-		Loop Until tmp = 0
-		
-		
-		
-	'/
-		Sleep 10,1
-	loop
 End Sub
 
-Dim Shared As Any Ptr dataUpdateThread
-Sub StartnetworkThread
-	dataUpdateThread=ThreadCreate(@networkThread)
-End Sub
+Function StartnetworkThread(count As UInteger) As threadControllUDT ptr
+	Dim As threadControllUDT Ptr c = New threadControllUDT
+	c->setDelay(10)
+	For i As Integer = 1 To count
+		c->startThread(@networkThread)
+	Next
+	Return c
+End Function
+
 
 /'
 Sub ServerdataThread(tmpType As any ptr)

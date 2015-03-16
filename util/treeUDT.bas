@@ -26,15 +26,18 @@ Destructor treeUDT
 	Dim As treeUDT Ptr tP = this.parent
 	this.remove()
 	
+	If tP <> 0 Then 
 	Dim As treeUDT Ptr tPtr
 	child.reset
-	Do
+
 		tPtr = Cast(treeUDT Ptr,child.getItem)
-			If tPtr <> 0 Then
-				If tP <> 0 Then  tP->Add(tPtr)
-			EndIf
-	Loop Until tPtr = 0
-	If tP <> 0 Then tP->child.reset
+		While(tPtr <> 0)
+			tP->Add(tPtr)
+			tPtr = Cast(treeUDT Ptr,child.getItem)
+		Wend
+	
+		tP->child.reset
+	End If
 End Destructor
 
 Sub treeUDT.add(tree as treeUDT ptr)
@@ -65,22 +68,23 @@ Sub treeUDT.BFS(tree As treeUDT Ptr)
 	tmp.setFIFO
 	tmp.push(tree)
 	
-	Do
+
+	tree = Cast(treeUDT Ptr,tmp.pop)
+	While (tree <> 0)
+		tree->todo
+		tree->child.reset
+		tPtr = 0
+		tPtr = Cast(treeUDT Ptr,tree->child.getItem)
+		While(tPtr <> 0)
+			tmp.push(tPtr)
+			tPtr = Cast(treeUDT Ptr,tree->child.getItem)
+		Wend
+		
+		
 		tree = Cast(treeUDT Ptr,tmp.pop)
-		If tree <> 0 Then
-			tree->todo
-			tree->child.reset
-			tPtr = 0
-			do
-				tPtr = Cast(treeUDT Ptr,tree->child.getItem)
-				If tPtr <> 0 Then
-					tmp.push(tptr)
-				EndIf
-			Loop Until tPtr = 0
-			
-			
-		EndIf
-	Loop Until tree = 0
+	Wend
+		
+	
 End Sub
 
 Sub treeUDT.DFS(tree As treeUDT Ptr)
@@ -91,22 +95,20 @@ Sub treeUDT.DFS(tree As treeUDT Ptr)
 	tmp.setLIFO
 	tmp.push(tree)
 	
-	Do
+	tree = Cast(treeUDT Ptr,tmp.pop)
+	While (tree <> 0)
+		tree->todo
+		tree->child.resetB
+		tPtr = 0
+		tPtr = Cast(treeUDT Ptr,tree->child.getItem(1))
+		While(tPtr <> 0)
+			tmp.push(tPtr)
+			tPtr = Cast(treeUDT Ptr,tree->child.getItem(1))
+		Wend
+		
+		
 		tree = Cast(treeUDT Ptr,tmp.pop)
-		If tree <> 0 Then
-			tree->todo
-			tree->child.resetB
-			tPtr = 0
-			do
-				tPtr = Cast(treeUDT Ptr,tree->child.getItem(1))
-				If tPtr <> 0 Then
-					tmp.push(tptr)
-				EndIf
-			Loop Until tPtr = 0
-			
-			
-		EndIf
-	Loop Until tree = 0
+	Wend
 End Sub
 
 Function treeUDT.toList(tree As treeUDT Ptr,noMutex As UByte=0) As list_type Ptr
@@ -117,21 +119,18 @@ Function treeUDT.toList(tree As treeUDT Ptr,noMutex As UByte=0) As list_type Ptr
 	tmp.setLIFO
 	tmp.push(tree)
 	
-	Do
+	tree = Cast(treeUDT Ptr,tmp.pop)
+	While (tree <> 0)
+		list->Add(tree,1)
+		tree->child.resetB
+		tPtr = 0
+		tPtr = Cast(treeUDT Ptr,tree->child.getItem(1))
+		While(tPtr <> 0)
+			tmp.push(tPtr)
+			tPtr = Cast(treeUDT Ptr,tree->child.getItem)
+		Wend
 		tree = Cast(treeUDT Ptr,tmp.pop)
-		If tree <> 0 Then
-			list->Add(tree,1)
-			tree->child.resetB
-			tPtr = 0
-			do
-				tPtr = Cast(treeUDT Ptr,tree->child.getItem(1))
-				If tPtr <> 0 Then
-					tmp.push(tptr)
-				EndIf
-			Loop Until tPtr = 0
-			
-			
-		EndIf
-	Loop Until tree = 0
+	Wend
+
 	Return list
 End Function

@@ -31,6 +31,7 @@ End Constructor
 
 Destructor lockUDT
 	MutexLock mutex
+	MutexUnLock mutexWait
 	MutexLock mutexWait
 	MutexDestroy(mutex)
 	MutexDestroy(mutexWait)
@@ -56,7 +57,6 @@ Function lockUDT.lock(key As UInteger) As utilUDT Ptr
 	Dim As hashtableItemUDT_uint Ptr tmp
 	Dim As utilUDT Ptr tmp2
 	If table <> 0 Then
-		MutexUnLock mutex
 		tmp = table->GetItemUDT(key)
 		If tmp = 0 Then MutexUnLock mutex : Return 0
 		If tmp->data_ <> remove And tmp->data_ <> removeWithItem Then
@@ -130,3 +130,5 @@ Sub lockUDT.free(key As UInteger,itemDelete As UByte=0)
 	EndIf
 	MutexUnLock mutex
 End Sub
+
+

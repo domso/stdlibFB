@@ -20,6 +20,9 @@ Type list_type
 	Declare Sub Clear(DisableHeadDelete As Byte=0)
 	Declare Sub remove(item As utilUDT Ptr,DisableHeadDelete As Byte=0)
 	Declare Sub remove_rec(item As utilUDT Ptr,set As list_item_type ptr,last As list_item_type Ptr)
+	
+	Declare Sub removeLast(item As utilUDT Ptr = 0,backward As Byte = 0,DisableHeadDelete As Byte=0)
+	
 	Declare Function data2list(item As utilUDT Ptr) As list_item_type Ptr
 	Declare Sub out
 	Declare Sub out_rec(set As list_item_type ptr)
@@ -32,6 +35,8 @@ Type list_type
 	Declare Function search(item As utilUDT Ptr) As utilUDT Ptr
 	
 	Declare Function lswap(item1 As utilUDT Ptr,item2 As utilUDT Ptr) As byte
+	Declare Function lswap(list_item1 As list_item_type Ptr,list_item2 As list_item_type Ptr) As Byte
+	
 	Declare Sub execute
 	
 	Declare Sub sort
@@ -251,6 +256,54 @@ Sub list_type.remove_rec(item As utilUDT Ptr,set As list_item_type ptr,last As l
 	'/
 End Sub
 
+Sub list_type.removeLast(item As utilUDT Ptr = 0,backward As Byte = 0,DisableHeadDelete As Byte=0)
+	MutexLock list_mutex
+	Dim As list_item_type ptr tmp
+	If set = 0 Then 
+		If backward = 0 Then
+			tmp = ende
+		Else
+			tmp = start
+		EndIf		
+	Else
+		If backward = 0 Then
+			tmp = set->front
+		Else
+			tmp = set->tail
+		EndIf	
+	EndIf
+	If tmp <> 0 Then
+		If item = 0 Or item = tmp->head Then
+			
+			If tmp=start Then
+				If start=ende Then ende=0
+				start=tmp->tail
+				If start<>0 Then start->front=0
+				If DisableHeadDelete=0 Then Delete tmp->head
+				Delete tmp	
+				tmp=0
+				'start=0
+				itemCount-=1
+				MutexUnLock list_mutex
+				return
+			Elseif tmp->front<>0 Then
+				tmp->front->tail=tmp->tail
+				If tmp->tail<>0 then tmp->tail->front=tmp->front
+				If ende = tmp Then ende = tmp->front
+				If DisableHeadDelete=0 Then Delete tmp->head
+				Delete tmp
+				tmp=0
+				itemCount-=1
+				MutexUnLock list_mutex
+				Return
+			EndIf	
+			
+			
+		EndIf	
+	EndIf
+	MutexUnLock list_mutex
+End Sub
+
 Function list_type.data2list(item As utilUDT Ptr)  As list_item_type Ptr
 	Dim As list_item_type ptr tmpPTR
 	tmpPTR = New list_item_type
@@ -365,6 +418,17 @@ Function list_Type.lswap(item1 As utilUDT Ptr,item2 As utilUDT Ptr) As Byte
 	MutexUnLock list_mutex
 	Return 1
 End Function
+
+Function list_Type.lswap(list_item1 As list_item_type Ptr,list_item2 As list_item_type Ptr) As Byte
+	If list_item1=list_item2 Or list_item1 = 0 Or list_item2 = 0 Then Return 0
+	MutexLock list_mutex
+	Dim As utilUDT Ptr tmp = list_item1->head
+	list_item1->head = list_item2->head
+	list_item2->head = tmp
+	MutexUnLock list_mutex
+	Return 1
+End Function
+
 
 Randomize Timer
 
