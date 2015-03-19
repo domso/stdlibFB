@@ -34,7 +34,7 @@ Sub clientAction_Thread(tmp As Any Ptr)
 	Dim As controllerUDT Ptr targetController
 	Dim As objUDT Ptr obj
 	Dim As objUDT Ptr target
-	
+	Dim As objUDT_instance Ptr instance = New objUDT_instance
 	
 	thread = Cast(threadControllUDT Ptr,tmp)
 	If thread = 0 Then return
@@ -46,6 +46,9 @@ Sub clientAction_Thread(tmp As Any Ptr)
 			If action->targetID <> 0 and action->objID <> action->targetID Then targetController = Cast(controllerUDT Ptr,controllerUDT_lock.lock(action->targetID))
 			
 			If client <> 0 And objController <> 0 Then
+				objController->setInstance(instance)
+				
+				
 				obj = objController->getObj
 				If objController->getClient = client And obj<>0 Then
 					If targetController = 0 Then
@@ -56,6 +59,7 @@ Sub clientAction_Thread(tmp As Any Ptr)
 								objController->setRemove
 						End Select
 					Else
+						targetController->setInstance(instance)
 						Select case obj->ActionUpdate(action->actionID,targetController->getObj)			
 							Case Is > 0
 								objController->setUpdate
@@ -71,6 +75,7 @@ Sub clientAction_Thread(tmp As Any Ptr)
 			If targetController <> 0 Then controllerUDT_lock.unlock(action->targetID,targetController)
 		EndIf
 	Loop While thread->check
+	Delete instance
 End Sub
 
 Function createClientActionThread(count As UInteger) As threadControllUDT ptr

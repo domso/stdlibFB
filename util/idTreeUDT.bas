@@ -5,6 +5,7 @@
 #Include once "lockUDT.bas"
 
 type idTreeUDT extends utilUDT
+	As UInteger parent
 	As UInteger ID
 	as list_type child = 1
 	

@@ -10,6 +10,7 @@ Type lockUDT extends utilUDT
 		As Any Ptr mutex
 		As Any Ptr mutexWait
 	Public:
+		
 		Declare Constructor(capacity As UInteger)
 		Declare Destructor
 		
@@ -122,7 +123,7 @@ Sub lockUDT.free(key As UInteger,itemDelete As UByte=0)
 			table->remove(key)
 		Else
 			If itemDelete Then
-				tmp->data_ = removeWithItem
+				tmp->data_ = removeWithItem 
 			Else
 				tmp->data_ = remove
 			EndIf

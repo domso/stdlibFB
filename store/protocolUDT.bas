@@ -8,15 +8,12 @@
 
 Dim Shared As idUDT protocolUDT_ID
 Dim Shared As list_type protocolMSGList
+Dim Shared As hashTableUDT protocolTable = 10
 
 Type protocolUDT extends utilUDT
 	Private:
 		As permissionUDT Ptr permission
-		
-		Static As protocolUDT ptr ptr lookUpArray
-		Static As Integer lookUpArraySize
-		Static As Integer lookUpArrayCount
-		
+			
 	Public:
 		As UInteger id
 		As UByte useAction=0,onlyServer=0,onlyClient=0,noReply=0
@@ -36,9 +33,6 @@ Type protocolUDT extends utilUDT
 		Declare Static Function getProtocolName(id As UInteger) As String
 End Type
 
-Dim As Integer protocolUDT.lookUpArraySize
-Dim As Integer protocolUDT.lookUpArrayCount
-Dim As protocolUDT ptr ptr protocolUDT.lookUpArray
 
 Constructor protocolUDT(titel As String,action As Any Ptr,Rights As UByte=NORMAL)
 	this.action = action
@@ -46,24 +40,8 @@ Constructor protocolUDT(titel As String,action As Any Ptr,Rights As UByte=NORMAL
 	this.titel = titel
 	this.id = protocolUDT_ID.getNext
 	this.permission = New permissionUDT(rights)
-	
-	If lookUpArray = 0 Then
-		lookUpArray = Allocate(id*SizeOf(protocolUDT Ptr))
-		lookUpArraySize = id
-	EndIf
-	
-	If id > lookUpArraySize Then
-		Dim As protocolUDT ptr ptr  tmp = Allocate(id*SizeOf(protocolUDT Ptr))
-		For i As Integer = 0 To lookUpArraySize-1
-			tmp[i] = lookUpArray[i]
-		Next
-		Delete lookUpArray
-		lookUpArray = tmp
-		lookUpArraySize = id
-	EndIf
-	
-	lookUpArray[id - 1] = @this
-	lookUpArrayCount+=1
+	protocolTable.add(this.id,@This)
+
 End Constructor
 
 Destructor protocolUDT
@@ -71,11 +49,6 @@ Destructor protocolUDT
 	If permission<>0 then
 		Delete permission
 	End If
-	lookUpArrayCount-=1
-	If lookUpArrayCount=0 Then
-		DeAllocate lookUpArray
-		lookUpArray = 0
-	EndIf
 End Destructor
 
 Function protocolUDT.equals(o As utilUDT Ptr) As Integer
@@ -123,13 +96,13 @@ Function protocolUDT.getError as ubyte
 end function
 
 Function protocolUDT.getProtocol(id As UInteger) As protocolUDT Ptr
-	If id >= lookUpArraySize Then Return 0
-	Return lookUpArray[id-1]
+	Return Cast(protocolUDT Ptr,protocolTable.get(id))
 End Function
 
 Function protocolUDT.getProtocolName(id As uinteger) As String
-	If id >= lookUpArraySize Then Return ""
-	Return lookUpArray[id-1]->titel
+	Dim As protocolUDT Ptr tmp = getProtocol(id)
+	If tmp = 0 Then Return ""
+	Return tmp->titel
 End Function
 
 Function getProtocolName(id As uinteger) As String
@@ -139,37 +112,41 @@ End Function
 
 Function useProtocol_internal(item As networkData Ptr,client As clientUDT ptr) As UByte
 	If item = 0 Then Return 4
-	If client = 0 Then Return 3
+	'If client = 0 Then Return 3
+
 	If item->V_TYPE=0 Then
 		'success error ?
 		protocolMSGList.add(New networkMSG(item),1)
 		Return 4
 	EndIf
 
-	Dim As protocolUDT Ptr tmp2 = protocolUDT.getProtocol(item->V_TYPE)
-
+	Dim As protocolUDT Ptr tmp2 =Cast(protocolUDT Ptr,protocolTable.get(item->V_TYPE)) 'protocolUDT.getProtocol(item->V_TYPE)
 	If tmp2=0 Then Return 3
+
 	If tmp2->onlyServer Then
 		If network.IsServer=0 Then Return 3
 	EndIf
 	If tmp2->onlyClient Then
 		If network.IsServer=1 Then Return 3
 	EndIf
-		
-	
+
 	'If tmp2->getPermission = 1 Then Return 1
 	
-	
-	If client->getRights->check(tmp2->getPermission) Then
-		If tmp2->useAction Then
-			If tmp2->action(item,client)=1 Then 
-				If tmp2->noReply Then Return 4
-				Return 0
-			EndIf
-			Return 2
-
+	If client <> 0 then 
+		If client->getRights->check(tmp2->getPermission) Then
+			Return 1
 		EndIf
 	EndIf
+	
+	If tmp2->useAction Then
+		If tmp2->action(item,client)=1 Then 
+			If tmp2->noReply Then Return 4
+			Return 0
+		EndIf
+		Return 2
+
+	EndIf
+
 
 	Return 1
 End Function

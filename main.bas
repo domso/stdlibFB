@@ -10,12 +10,26 @@
  
  Print "start server"
  
- network.CreateServer(9834,2)
+ network.CreateServer(9834,10)
+ 
+ 
+ Var thread = StartnetworkThread(10)
+ Var Thread2 = createControllerThread(1)
 
-Var thread = StartnetworkThread(10)
+ Var tmpController = New controllerUDT(New objUDT(SizeOf(objUDT)))
+ tmpController->worldID = 5
+ '
+ network.log.out
 Sleep
 thread->Stop
-'Delete thread
+thread2->Stop
+Delete thread
+Delete thread2
+network.CloseServerConnection
+
+
+
+
 
 'Do
 '	Sleep 10,1

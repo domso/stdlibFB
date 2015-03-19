@@ -8,6 +8,8 @@ Type utilUDT extends object
 	Declare virtual Function toString As String
 	Declare virtual Function todo As Byte
 	
+	Declare virtual Destructor
+	
 	'final
 	Declare Function toBINString As String
 	Declare Sub fromBINString(item As String)
@@ -15,6 +17,10 @@ Type utilUDT extends object
 	Declare Sub fromBINDIFString(obj As String)
 	Declare Function copy As utilUDT ptr
 End Type
+
+Destructor utilUDT
+
+End Destructor
 
 Function utilUDT.equals(o As utilUDT Ptr) As Integer
 	If o=0 Then Return 0

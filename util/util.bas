@@ -19,4 +19,5 @@
 #Include Once "staticstackUDT.bas"
 #Include Once "hashtableUDT.bas"
 #Include Once "lockUDT.bas"
+#Include Once "intMapUDT.bas"
 #Include Once "threadControllUDT.bas"

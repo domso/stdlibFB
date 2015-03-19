@@ -8,4 +8,7 @@
 '#Include Once "inventoryUDT.bas"
 #include once "authentication.bas"
 #include once "characterSelection.bas"
+#include once "objUDT.bas"
+#include once "controllerUDT.bas"
+#include once "controllerThread.bas"
 

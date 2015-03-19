@@ -15,11 +15,17 @@ Type controllerUDT extends idTreeUDT
 		As clientUDT Ptr Access
 		As objUDT Ptr obj 
 	Public:
+		As UInteger worldID
+		As double updateTime
+	
 		Declare Constructor(data_ As objUDT ptr,id As UInteger=0)
 		Declare Destructor
 	
 		Declare Sub setUpdate
 		Declare Sub setRemove
+		
+		Declare Sub setInstance(instance As objUDT_instance Ptr)
+		Declare Function hasInstance As UByte
 		
 		Declare Function getAccess(client As clientUDT Ptr) As UByte 
 		Declare Function getClient As clientUDT Ptr
@@ -54,6 +60,16 @@ Sub controllerUDT.setRemove
 	remove = 1
 End Sub
 
+Sub controllerUDT.setInstance(instance As objUDT_instance Ptr)
+	If obj = 0 Then Return
+	obj->setInstance(instance)
+End Sub
+
+Function controllerUDT.hasInstance As UByte
+	If obj = 0 Then Return 0
+	Return obj->hasInstance
+End Function
+
 Function controllerUDT.getAccess(client As clientUDT Ptr) As ubyte
 	If client = 0 Or this.access<> 0 Then Return 0
 	this.access = client
@@ -73,7 +89,6 @@ Sub controllerUDT.closeAccess
 End Sub
 
 Function controllerUDT.todo As Byte
-	Print id ;
 	If obj = 0 Then Return 0
 	If obj->isEnable = 0 Then Return 0
 	if obj->hasInstance = 0 then return 0
@@ -94,16 +109,15 @@ Function controllerUDT.todo As Byte
 		If result>0 Then update = 1
 		If result<0 Then remove = 1
 	EndIf
+	'If update Then
+	'	
+	'	Dim As String tbd = obj->packBINDIF
+	'	
+	'EndIf
 	
-	If update Then
-		
-		Dim As String tbd = obj->packBINDIF
-		
-	EndIf
-	
-	If remove Then
-		
-	EndIf
+	'If remove Then
+	'	
+	'EndIf
 	
 	Return 0
 End Function

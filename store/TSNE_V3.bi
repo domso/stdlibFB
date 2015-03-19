@@ -1548,7 +1548,7 @@ Do
     Sleep 1, 1
     #IF DEFINED(TSNE_SleepLock)
         MutexUnLock(TSNE_INT_SleepMutex)
-    #ENDIF
+    #EndIf
 Loop
 MutexUnLock(TSNE_INT_Mutex)
 End Sub

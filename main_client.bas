@@ -6,8 +6,16 @@
 
 
 network.CreateClient("127.0.0.1",9834)
-'sleep
+
 Var thread = StartnetworkThread(10)
+Sleep
+thread->Stop
+Delete thread
+network.CloseClientConnection
+  
+/'
+
+/'
 start_authentication("Domso")
 
 dim as byte r
@@ -34,7 +42,7 @@ end if
 	Sleep 100,1
 loop
 sleep
-/'
+
 
 Do
 	cls
@@ -151,3 +159,4 @@ Sleep 1000,1
 network.log.out 
  sleep '
  '/
+'/
